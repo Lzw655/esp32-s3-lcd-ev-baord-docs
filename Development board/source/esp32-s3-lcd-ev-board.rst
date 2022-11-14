@@ -29,7 +29,7 @@ ESP32-S3-LCD-Ev-Board 是一款基于 ESP32-S3 芯片的屏幕交互开发板，
 入门指南
 ========
 
-本节介绍如何开始使用 ESP32-S3-LCD-Ev-Board。首先，在 **组件介绍** 小节介绍一些关于开发板的基本信息，然后在 **应用程序开发** 小节介绍如何开始使用该开发板进行应用开发，最后介绍该开发板包装和零售信息。
+本节介绍如何开始使用 ESP32-S3-LCD-Ev-Board。首先，在 **组件介绍** 小节介绍一些关于开发板的基本信息，然后 **应用程序开发** 小节介绍如何开始使用该开发板进行应用开发，最后介绍如何获取该开发板。
 
 组件介绍
 --------
@@ -94,6 +94,8 @@ ESP32-S3-LCD-Ev-Board 开发板主要由以下两个部分组成：
 LCD 子板
 ^^^^^^^^
 
+- **ESP32-S3-LCD-Ev-Board_SUB1** 子板提供了两种屏幕接口，分别支持连接一块 0.96 英寸 spi 接口屏或者一块 2.4 英寸 I2C 接口屏，该子板暂未做适配，此处不做进一步讲解。
+
 - **ESP32-S3-LCD-Ev-Board_SUB2** 子板提供了两种屏幕接口，分别支持连接一块 RGB 接口屏或者一块 8080 并口屏。当前子板贴装了一块 3.95 英寸、RGB565 接口、分辨率为 480x480 的触摸屏，该屏使用的 LCD 驱动芯片型号为 GC9503CV，触摸驱动芯片型号为 FT5x06。
 
 .. figure:: ../_static/esp32-s3-lcd-ev-board-sub2-front.png
@@ -155,33 +157,15 @@ LCD 子板
 2. 插入 USB 数据线，分别连接 PC 与开发板的两个 USB 端口之一。
 3. LCD 屏幕开始显示 UI 界面，可以用手指与触摸屏进行交互。
 
-
 软件设置
 ^^^^^^^^
 
 请前往 `快速入门 <https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32s3/get-started/index.html>`__ 中 `详细安装步骤 <https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32s3/get-started/index.html#get-started-step-by-step>`__ 一节查看如何快速设置开发环境。
 
-内容和包装
------------
+样品获取
+--------
 
-可分开购买主板或主板配件，其中配件包含：
-
-- LCD 扩展板：ESP32-S3-LCD-Ev-Board_SUB3
-
-零售订单
-^^^^^^^^
-
-如购买样品，每个开发板将以防静电袋或零售商选择的其他方式包装。
-
-零售订单请前往 https://www.espressif.com/zh-hans/company/contact/buy-a-sample。
-
-
-批量订单
-^^^^^^^^
-
-如批量购买，开发板将以大纸板箱包装。
-
-批量订单请前往 https://www.espressif.com/zh-hans/contact-us/sales-questions。
+此开发板适用于评估高性能的 HMI 方案，未公开售卖，如有样品需求请邮件联系我们 sales@espressif.com。
 
 硬件参考
 ========
