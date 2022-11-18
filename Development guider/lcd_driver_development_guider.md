@@ -134,6 +134,8 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
 
 3. **根据数据手册 SPI 时序确定配置参数**
 
+    下图是 ST7789 数据手册上部分 SPI 功能时序图，后续将以它为例介绍各个参数如何配置。
+
     <div align=center ><img src="./st7789_spi_timing.png" width=600/></div>
 
     a. `spi_mode`: 取决于 SCK 时钟线的 CPOL（极性）和 CPHA（相位）。**CPOL** 可以简单理解为 CS 使能后 SCK 在第几个跳变沿采样，0 为第 1 个跳变沿，1 为第 2 个跳变沿；**CPHA** 可以简单理解为 SCK 空闲时电平，0 为低电平，1 为高电平。它们的对应关系如下表所示：
@@ -145,8 +147,12 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
     | 2        | 1    | 0    |
     | 3        | 1    | 1    |
 
-    上图是 ST7789 数据手册上部分 SPI 功能时序图，从图中可以看出，SCL 在 CS 使能后第 1 个跳变沿采样，所以 CPOL = 0， SCL 空闲时电平为 0，所以 CPHA 为 0，因此可以得到 `spi_mode = 0`（一般大部分屏幕都为 0）。
+    从上图中可以看出，SCL 在 CS 使能后第 1 个跳变沿采样，所以 CPOL = 0， SCL 空闲时电平为 0，所以 CPHA 为 0，因此可以得到 `spi_mode = 0`（一般大部分屏幕都为 0）。
 
-    b. `cs_high_active`: 从上图可以看出 CS 拉低时开始操作，因此 `cs_high_active = 0`（一般大部分屏幕都为 0）。
+    b. `cs_high_active`：从上图可以看出 CS 拉低时开始操作，因此 `cs_high_active = 0`（一般大部分屏幕都为 0）。
 
-    c.
+    c. `dc_low_on_data`：从上图可以看出发送命令时 DC 线为 0，因此 `dc_low_on_data = 0`（一般大部分屏幕都为 0）
+
+    d. `lsb_first`：从上图可以看出命令或数据都是先发送高位（D7），因此 `lsb_first = 0`（一般大部分屏幕都为 0）
+
+    e. `sio_mode`：如果屏幕配置为如上图所示的 **Interface-I** 型，其数据的读取和写入只使用 SDA 一根数据线，此时 `sio_mode = 1`；如果屏幕配置为如上图所示的 **Interface-II** 型，其数据的读取使用 SDO，而写入使用 SDA，此时 `sio_mode = 0`（一般大部分屏幕都为 0）。
