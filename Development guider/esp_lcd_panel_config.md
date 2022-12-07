@@ -1,4 +1,4 @@
-# 配置 esp_lcd_panel（LCD 寄存器）
+# ESP_LCD 驱动适配
 
 目前官方基于 `esp_lcd` 驱动适配过的 LCD 驱动 IC 如下：
 
@@ -11,7 +11,7 @@
 
 本节提供了一套针对常见 **SPI/8080** 接口 LCD 驱动 IC（ili9341、st7789、gc9a01 等型号）通用的驱动代码，用户按照屏幕实际的配置参数进行调整，即可使用 `esp_lcd` 轻松适配自己的屏幕。
 
-以 st7789 为例，后续会讲解详细适配过程：
+以 st7789 为例，**后续会讲解详细适配过程**：
 
 * **lcd_panel_st7789.h**:
 ```
@@ -389,3 +389,29 @@ static esp_err_t panel_st7789_disp_off(esp_lcd_panel_t *panel, bool off)
 1. **确认兼容性**：比较简单的方法是，查看屏幕驱动 IC 的数据手册确认刷屏过程（命令、时序等），通过对比模板中的 `panel_st7789_draw_bitmap()` 函数查看是否一致，否则请参照其他示例修改或自行进行适配
 2. **名称替换**：用编辑器在模板中搜索关键词 “st7789” 并全局替换为目标 IC 名称（如 st7701）
 3. **修改寄存器配置**：整个模板中仅需修改 `vendor_specific_init` 数组 和 `panel_st7789_init()` 函数。其中，前者需要根据屏幕厂商给的配置参数进行修改，并根据数据中的最大字节长度修改 `LCD_CONFIG_DATA_LEN_MAX` 宏；如果命令有延时或特殊命令等要求，可自行对后者进行调整。
+
+## 使用示例
+
+```
+    // 用户需要根据接口类型提前初始化 io_handle 变量
+
+    esp_lcd_panel_handle_t panel_handle = NULL;
+    esp_lcd_panel_dev_config_t panel_config = {
+        .reset_gpio_num = PIN_NUM_LCD_RST,          // 复位引脚，没有则设为 -1
+        .color_space = ESP_LCD_COLOR_SPACE_RGB,     // LCD 的 RGB 顺序，一般默认为 ESP_LCD_COLOR_SPACE_RGB
+                                                    // 内部通过 0x36 命令进行实现
+        .bits_per_pixel = 16,                       // RGB565-16、RGB666-18
+    };
+    ESP_ERROR_CHECK(lcd_new_panel_st7789(io_handle, &panel_config, &panel_handle));
+    ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));     // 复位，若设置了复位引脚，则硬件复位，否则软件复位
+    ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+    ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
+#else
+    ESP_ERROR_CHECK(esp_lcd_panel_disp_off(panel_handle, false));
+#endif
+```
+
+* **可用的 API**：后续可以利用 `panel_handle` 和 *esp_lcd_panel_ops.h* 中的 API 来操作 LCD，如刷屏函数 `esp_lcd_panel_draw_bitmap()`
+
+* **`esp_lcd_panel_draw_bitmap()`**：8080/SPI LCD 刷屏是从指定内存地址传输数据到外设，通常采用的是 DMA 的方式，也就是说该函数调用完成后数据仍在通过 DMA 进行传输，此时不能修改正在使用的内存区域（如让 LVGL 渲染计算），因此需要通过总线初始化时注册的回调函数来判断传输是否完成

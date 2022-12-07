@@ -1,7 +1,7 @@
 # SPI LCD 应用代码详解
 ***
 
-参考的示例程序位于 ESP-IDF 中 [examples/peripherals/lcd/spi_lcd_touch](https://github.com/espressif/esp-idf/tree/release/v5.0/examples/peripherals/lcd/spi_lcd_touch/main)，下面对代码中各阶段具体的配置参数进行讲解。
+参考的示例工程位于 ESP-IDF 中 [examples/peripherals/lcd/spi_lcd_touch](https://github.com/espressif/esp-idf/tree/release/v5.0/examples/peripherals/lcd/spi_lcd_touch/main)，下面对代码中各阶段具体的配置参数进行讲解。
 
 ## SPI 总线初始化
 ***
@@ -25,7 +25,7 @@ ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &bus_cfg, SPI_DMA_CH_AUTO));
                                         // 第 3 个参数表示使用的 DMA 通道号，默认设置为 SPI_DMA_CH_AUTO 即可
 ```
 
-1. 如果 LCD 驱动 IC 配置为 **Interface-I** 型（见 LCD 硬件详解），仅需设置 `mosi_io_num` 为其数据线 IO，将 `miso_io_num` 设置为 -1。
+1. 如果 LCD 驱动 IC 配置为 **Interface-I** 型（见 [LCD 硬件详解](./esp_lcd_hardware.md#interface-iii-模式)），仅需设置 `mosi_io_num` 为其数据线 IO，将 `miso_io_num` 设置为 -1。
 
 2. `max_transfer_sz` 参数仅用于驱动内部对用户传输数据的大小进行判断，若超出范围则报错，并不是内部创建 buffer 的大小，而且 SPI 只会在传输 PSRAM 内存时动态创建同等大小的 DMA buffer，因为 SPI 驱动不支持 DMA 传输 PSRAM 内存。**需注意**，单次刷屏的字节上限不仅受限于 `max_transfer_sz`，而且受限于硬件寄存器 `SPI_LL_DATA_MAX_BIT_LEN`（不同系列芯片数值不同，可在 ESP-IDF 中搜索到），**为保证程序正常运行**，它们的大小关系应满足 `单次传输字节数 <= max_transfer_sz <= 2^(SPI_LL_DATA_MAX_BIT_LEN - 3)`。
 
@@ -108,3 +108,8 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
     d. `lsb_first`：从上图可以看出命令或数据都是先发送高位（D7），因此 `lsb_first = 0`（一般大部分屏幕都为 0）
 
     e. `sio_mode`：如果屏幕配置为如上图所示的 **Interface-I** 型，其数据的读取和写入只使用 SDA 一根数据线，此时 `sio_mode = 1`；如果屏幕配置为如上图所示的 **Interface-II** 型，其数据的读取使用 SDO，而写入使用 SDA，此时 `sio_mode = 0`（一般大部分屏幕都为 0）。
+
+# 配置 esp_lcd_panel
+***
+
+见 [ESP_LCD 驱动适配](./esp_lcd_panel_config.md)

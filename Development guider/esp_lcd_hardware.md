@@ -23,8 +23,8 @@
 
     * 各接口通用：RST（RESX）复位
     * **SPI**: 通常包含了 CS、SCK（SCL）、SDA（MOSI）、SDO（MISO） 、RS（WR）
-    * **8080**: 通常包含了 CS（CSX）、RD（RDX）、WR（WRX）、DC（D/CX）、D[15:0]
-    * **RGB**: 通常包含了 三线 SPI、HSYNC、VSYNC、PCLK、DE、D[23:0]
+    * **8080**: 通常包含了 CS（CSX）、RD（RDX）、WR（WRX）、DC（D/CX）、D[15:0]（D[7:0]）
+    * **RGB**: 通常包含了 三线 SPI、HSYNC、VSYNC、PCLK、DE、D[23:0]（D[17:0]）
 
 # SPI 接口
 
@@ -58,4 +58,27 @@
 
 ## 接口模式
 
+RGB 接口具有两种模式，即 **DE** 和 **HV** 模式，它们的区别在于**是否使用 DE 信号线**，可以通过命令进行配置。
 
+* **DE 模式**：需要使用 VSYNC、HSYNC、PCLK（DOTCLK）、DE、D[X:0] 信号线，时序如下图所示。
+
+<div align=center><img src="./static/st7789_rgb_de.png" width=600/></div>
+<div align=center>图6  RGB DE 模式时序</div>
+
+* **HV 模式**：需要使用 VSYNC、HSYNC、PCLK（DOTCLK）、D[X:0] 信号线，时序如下图所示。
+
+<div align=center><img src="./static/st7789_rgb_hv.png" width=600/></div>
+<div align=center>图7  RGB HV 模式时序</div>
+
+## 色彩（输入数据）类型
+
+通常来说，RGB 接口支持多种色彩（输入数据）类型，包括 **RGB565**、**RGB666**、**RGB888**等，也可以通过命令进行配置，如下图所示。
+
+<div align=center><img src="./static/st7789_rgb_data.png" width=600/></div>
+<div align=center>图8  RGB 输入数据类型</div>
+
+Note: 262K=RGB666、65K=RGB565，参考[资料](https://focuslcds.com/color-depth-65k-262k-16-7m-colors/)
+
+因此，**命令配置需要与硬件端口保持一致**，比如某个 RGB LCD 屏幕仅有 D[17:0] 18 位数据线，需要确保命令配置其数据宽度 <= 18 位。
+
+目前仅有 ESP32-S3 支持 RGB 接口，且其仅支持输出 **16-bit RGB565** （或 8-bit RGB888）色彩类型，但是**通过硬件连接可以使其驱动 RGB666 或 RGB888 类型的屏幕**，参考[原理图](https://github.com/espressif/esp-dev-kits/blob/master/docs/_static/schematics/esp32-s3-lcd-ev-board/SCH_ESP32-S3-LCD_Ev_Board_SUB3_V1.0_20220617.pdf)。
