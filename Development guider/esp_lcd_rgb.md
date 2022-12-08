@@ -1,6 +1,7 @@
 # RGB LCD 应用代码详解
 ***
 
+* 详细说明见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#rgb-interfaced-lcd)
 * 如果不需要 SPI 接口进行配置的话，参考的示例工程位于 ESP-IDF 中 [examples/peripherals/lcd/rgb_panel](https://github.com/espressif/esp-idf/tree/master/examples/peripherals/lcd/rgb_panel)
 * 如果需要 SPI 的话（即 3-line SPI + RGB），参考的示例工程位于 ESP-BSP 中 [examples/display_lvgl_demos](https://github.com/espressif/esp-bsp/tree/master/examples/display_lvgl_demos)，该示例中 480x480 LCD 子板为 “3-line SPI + RGB”，而 800x480 LCD 子板仅为 “RGB”
 * 下面以常见的 “3-line SPI + RGB” 为例，对代码中各阶段具体的配置参数进行讲解
@@ -289,7 +290,7 @@ esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
     显示帧率 = min(接口帧率, 渲染帧率)
     $$
 
-* **Bounce Buffer 机制**：驱动默认从 PSRAM 通过 DMA 传输数据到外设实现刷屏，而 Bounce buffer 通过指定大小的内部 SRAM，首先将数据从 PSRAM 通过 memcpy 搬运到内部 SRAM，然后通过 DMA 再传输至外设，以此来提升 PCLK 的设置上限，但是会提高 CPU 占用率，降低实际显示帧率
+* **Bounce Buffer 机制**：驱动默认从 PSRAM 通过 DMA 传输数据到外设实现刷屏，而 Bounce buffer 通过指定大小的内部 SRAM，首先将数据从 PSRAM 通过 memcpy 搬运到内部 SRAM，然后通过 DMA 再传输至外设，以此来提升 PCLK 的设置上限，也能够避免操作 flash 引起的屏幕漂移问题，但是会提高 CPU 占用率，降低实际显示帧率，详细讲解见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)
 
 * **`esp_lcd_panel_draw_bitmap()`**：与 8080/SPI LCD 驱动不同，RGB LCD 刷屏是从指定内存地址搬运刷屏数据到 PSRAM 内的帧 buffer，是采用 memcpy 的方式进行内存搬运，也就是说该函数调用完成就表示数据搬运完成，此时可以对原始内存区域进行修改（如让 LVGL 渲染计算），无需通过回调函数等待
 
@@ -306,7 +307,7 @@ esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
   - 开启 `CONFIG_SPIRAM_FETCH_INSTRUCTIONS` 和 `CONFIG_SPIRAM_RODATA`
   - 开启 `CONFIG_LCD_RGB_RESTART_IN_VSYNC`，可能会导致闪花屏和降帧率，一般不推荐，可以尝试
 - **应用方面**
-  - 不要连续长时间写 flash，比如连续执行 OTA、NVS 等写操作，可以分段、分时进行
+  - 长时间写 flash，比如连续执行 OTA、NVS 等写操作，可以设置 RGB 为 `Bounce Buffer` 模式，详细讲解见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)（不能使能 `GDMA_ISR_IRAM_SAFE`，否则会 Cache 报错）
   - 短时操作 flash 导致漂移的情况，如 wifi 连接等操作前后，可以在操作前调用 `esp_lcd_rgb_panel_set_pclk()` 降低 PCLK（如 6MHz）并延时大约 20ms（RGB 刷完一帧的时间），然后在操作结束后提高 PCLK 至原始水平，期间可能会造成短暂的闪白屏现象
   - 使能 `esp_lcd_rgb_panel_config_t` 中的 `flags.refresh_on_demand`，通过调用 `esp_lcd_rgb_panel_refresh()` 接口手动刷屏，在保证屏幕不闪白的情况下尽量降低刷屏频率
   - 如果无法避免，可以调用 `esp_lcd_rgb_panel_restart()`  接口重置 RGB 时序，防止永久性漂移
