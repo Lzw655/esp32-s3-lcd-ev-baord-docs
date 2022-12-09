@@ -1,5 +1,4 @@
 # ESP_LCD 驱动介绍
-***
 
 ESP 的 LCD 驱动位于 **ESP-IDF** 下的 [components/esp_lcd](https://github.com/espressif/esp-idf/tree/master/components/esp_lcd)，目前仅存在于 **release/v4.4 及以上**版本中。**esp_lcd** 能够驱动 ESP 系列芯片所支持的 **I2C**、**SPI**、**8080** 以及 **RGB** 四种接口的 LCD 屏幕，各系列芯片所支持的 LCD 接口如下表所示。
 
@@ -15,7 +14,6 @@ ESP 的 LCD 驱动位于 **ESP-IDF** 下的 [components/esp_lcd](https://github.
 由于 RGB LCD 屏幕的驱动原理与其他接口屏幕有本质差异，下面将按照 **非 RGB 接口**和 **RGB 接口**分别进行介绍：
 
 ## 非 RGB 接口
-***
 
 ### 硬件框架
 <div align=center ><img src="./static/Non-RGB_hardware_flow.png" width=400/></div>
@@ -32,8 +30,12 @@ ESP 的 LCD 驱动位于 **ESP-IDF** 下的 [components/esp_lcd](https://github.
 2. **创建 esp_lcd_panel_io**：基于接口总线新建设备，生成 `esp_lcd_panel_io_handle_t` 类型变量并提供 `esp_lcd_panel_io_tx_param()` 和 `esp_lcd_panel_io_tx_color()` API 供后续过程使用
 3. **配置 esp_lcd_panel**：通过 **esp_lcd_panel_io** 对 LCD 屏幕的寄存器进行配置，生成 `esp_lcd_panel_handle_t` 类型变量并提供 `esp_lcd_panel_draw_bitmap()` 等 API 实现刷屏等操作
 
+### 代码详解
+
+* [SPI LCD 应用代码详解](./esp_lcd_spi.md)
+* 8080 LCD 应用代码详解(正在进行)
+
 ## RGB 接口
-***
 
 ### 硬件框架
 
@@ -49,3 +51,7 @@ ESP 的 LCD 驱动位于 **ESP-IDF** 下的 [components/esp_lcd](https://github.
 
 1. **配置 LCD 寄存器**（可选）：大部分 RGB 屏幕采用 “三线 SPI + RGB” 接口形式，需要通过 SPI 接口对内部寄存器进行初始化配置，这类屏幕的详细信息请参考[资料](https://focuslcds.com/3-wire-spi-parallel-rgb-interface-fan4213/)。由于该操作仅在 LCD 初始化时进行一次，且对通信速率要求不高，可以使用 IO（ESP 或 IO 扩展芯片）模拟 SPI 进行实现。
 2. **创建 esp_lcd_panel**：对 ESP 的 RGB 接口进行参数配置，创建 `esp_lcd_panel_handle_t` 类型变量并提供 `esp_lcd_panel_draw_bitmap()` 等 API 实现刷屏等操作
+
+### 代码详解
+
+[RGB LCD 应用代码详解](./esp_lcd_rgb.md)

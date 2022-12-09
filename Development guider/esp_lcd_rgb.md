@@ -1,5 +1,4 @@
 # RGB LCD 应用代码详解
-***
 
 * 详细说明见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#rgb-interfaced-lcd)
 * 如果不需要 SPI 接口进行配置的话，参考的示例工程位于 ESP-IDF 中 [examples/peripherals/lcd/rgb_panel](https://github.com/espressif/esp-idf/tree/master/examples/peripherals/lcd/rgb_panel)
@@ -7,7 +6,6 @@
 * 下面以常见的 “3-line SPI + RGB” 为例，对代码中各阶段具体的配置参数进行讲解
 
 ## LCD 初始化配置
-***
 
 本示例采用了 IO 扩展芯片（TCA9554）来模拟 SPI 时序，**用户也可以通过硬件 SPI 或芯片 IO 模拟 SPI**。
 
@@ -153,7 +151,6 @@ static esp_err_t lcd_config(esp_io_expander_handle_t io_expander)
         需要结合具体的硬件连接方式进行设置，55/50=16-bit(RGB565);66=18-bit(RGB666);77或默认=24-bit(RGB888)
 
 ## 配置 esp_lcd_panel
-***
 
 ```
 #include "driver/gpio.h"
@@ -307,7 +304,8 @@ esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
   - 开启 `CONFIG_SPIRAM_FETCH_INSTRUCTIONS` 和 `CONFIG_SPIRAM_RODATA`
   - 开启 `CONFIG_LCD_RGB_RESTART_IN_VSYNC`，可能会导致闪花屏和降帧率，一般不推荐，可以尝试
 - **应用方面**
-  - 长时间写 flash，比如连续执行 OTA、NVS 等写操作，可以设置 RGB 为 `Bounce Buffer` 模式，详细讲解见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)（不能使能 `GDMA_ISR_IRAM_SAFE`，否则会 Cache 报错）
+  - 长时间写 flash，比如连续执行 OTA、NVS 等写操作，可以分段、分时进行
+  - （仅 master）长时间写 flash，比如连续执行 OTA、NVS 等写操作，可以设置 RGB 为 `Bounce Buffer` 模式，详细讲解见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)（不能使能 `GDMA_ISR_IRAM_SAFE`，否则会 Cache 报错）
   - 短时操作 flash 导致漂移的情况，如 wifi 连接等操作前后，可以在操作前调用 `esp_lcd_rgb_panel_set_pclk()` 降低 PCLK（如 6MHz）并延时大约 20ms（RGB 刷完一帧的时间），然后在操作结束后提高 PCLK 至原始水平，期间可能会造成短暂的闪白屏现象
   - 使能 `esp_lcd_rgb_panel_config_t` 中的 `flags.refresh_on_demand`，通过调用 `esp_lcd_rgb_panel_refresh()` 接口手动刷屏，在保证屏幕不闪白的情况下尽量降低刷屏频率
   - 如果无法避免，可以调用 `esp_lcd_rgb_panel_restart()`  接口重置 RGB 时序，防止永久性漂移

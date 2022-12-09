@@ -1,10 +1,8 @@
 # SPI LCD 应用代码详解
-***
 
 参考的示例工程位于 ESP-IDF 中 [examples/peripherals/lcd/spi_lcd_touch](https://github.com/espressif/esp-idf/tree/release/v5.0/examples/peripherals/lcd/spi_lcd_touch/main)，下面对代码中各阶段具体的配置参数进行讲解。
 
 ## SPI 总线初始化
-***
 
 如果其他设备和 LCD 挂在同一总线上，仅需对其初始化一次。
 
@@ -32,7 +30,6 @@ ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &bus_cfg, SPI_DMA_CH_AUTO));
 3. 目前 esp_lcd 不支持驱动 QSPI LCD，但是可以自行通过 SPI 实现驱动。
 
 ## 创建 esp_lcd_panel_io
-***
 
 基于初始化好的 SPI host 创建一个 esp_lcd_panel_io，每一个 **esp_lcd_panel_io** 对应一个 **SPI 设备**。
 
@@ -110,6 +107,5 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
     e. `sio_mode`：如果屏幕配置为如上图所示的 **Interface-I** 型，其数据的读取和写入只使用 SDA 一根数据线，此时 `sio_mode = 1`；如果屏幕配置为如上图所示的 **Interface-II** 型，其数据的读取使用 SDO，而写入使用 SDA，此时 `sio_mode = 0`（一般大部分屏幕都为 0）。
 
 # 配置 esp_lcd_panel
-***
 
 见 [ESP_LCD 驱动适配](./esp_lcd_panel_config.md)
