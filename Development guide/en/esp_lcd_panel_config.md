@@ -3,9 +3,9 @@
 Currently, the official LCD driver ICs adapted based on the `esp_lcd` driver are as follows:
 
 1. [esp_lcd](https://github.com/espressif/esp-idf/blob/7f4bcc36959b1c483897d643036f847eb08d270e/components/esp_lcd/include/esp_lcd_panel_vendor.h)：st7789、nt35510、ssd1306
-2. [包管理器](https://components.espressif.com/)：gc9a01、ili9341、ili9488、ra8875、sh1107（持续更新中）
+2. [Package manager](https://components.espressif.com/)：gc9a01、ili9341、ili9488、ra8875、sh1107（continously updating）
 
-**It should be noted that even if the driver IC is the same, different screens often require different register configuration parameters, and screen manufacturers usually provide matching configuration parameters (codes), so it is recommended to use the above two methods to obtain codes of similar driver ICs, according to Modify the actual parameters of your own screen. **
+**It should be noted that even if the driver IC is the same, different screens often require different register configuration parameters, and screen manufacturers usually provide matching configuration parameters (codes), so it is recommended to use the above two methods to obtain codes of similar driver ICs, according to Modify the actual parameters of your own screen.**
 
 ## Driver template
 

@@ -1,12 +1,9 @@
 # LCD hardware details
-TThe first step to driving an LCD is to understand its interface type. Most common LCD driver ICs, such as ST7789, GC9A01, ILI9341, etc., generally support multiple interfaces (such as SPI, 8080, and RGB). When the manufacturer packs it into an LCD module, only one of the interfaces will be reserved according to the customer's requirements or by convention (the RGB screen will usually also reserve the SPI interface), refer to [data](https://focuslcds.com/3 -wire-spi-parallel-rgb-interface-fan4213/)), as shown in Figure 1. 
+TThe first step to driving an LCD is to understand its interface type. Most common LCD driver ICs, such as ST7789, GC9A01, ILI9341, etc., generally support multiple interfaces (such as SPI, 8080, and RGB). When the manufacturer packs it into an LCD module, only one of the interfaces will be reserved according to the customer's requirements or by convention (the RGB screen will usually also reserve the SPI interface), refer to [data](https://focuslcds.com/3-wire-spi-parallel-rgb-interface-fan4213/), as shown in Figure 1. 
 <div align=center><img src="../_static/gc9a01_block.png" width=600/></div> 
 <div align=center>Figure 1. GC9A01 functional block diagram</div>
 
 Which interface the driver IC finally uses is determined by the four pins **IM[3:0]**, as shown in Figure 2. Most screens have defined IM[3:0] internally, but some reserve IM[3:0] and all interface pins, which can be configured by themselves.
-
-驱动 IC 最终使用哪种接口是通过 **IM[3:0]** 这 4 个引脚来决定的，如图 2 所示。大部分屏幕在内部已经定义好了 IM[3:0] ，但是也有一些屏幕会预留 IM[3:0] 以及所有的接口引脚，此时可以自行配置。
-
 <div align=center><img src="../_static/st7789_interface.png" width=600/></div>
 <div align=center>Figure 2. ST7789 interface definition</div>
 
@@ -81,4 +78,4 @@ Note: 262K=RGB666、65K=RGB565，reference [data](https://focuslcds.com/color-de
 
 Therefore, **command configuration must be consistent with the hardware port**. For example, if an RGB LCD screen only has D[17:0] 18-bit data line, you need to ensure that the data width of the command configuration is <= 18 bits.
 
-Currently, only ESP32-S3 supports RGB interface, and it only supports output **16-bit RGB565** (or 8-bit RGB888) color type but **it can drive RGB666 or RGB888 type of screen through hardware connection* *, refer to [schematic](https://github.com/espressif/esp-dev-kits/blob/master/docs/_static/schematics/esp32-s3-lcd-ev-board/SCH_ESP32-S3-LCD_Ev_Board_SUB3_V1.0_20220617.pdf).
+Currently, only ESP32-S3 supports RGB interface, and it only supports output **16-bit RGB565** (or 8-bit RGB888) color type but **it can drive RGB666 or RGB888 type of screen through hardware connection**, refer to [schematic](https://github.com/espressif/esp-dev-kits/blob/master/docs/_static/schematics/esp32-s3-lcd-ev-board/SCH_ESP32-S3-LCD_Ev_Board_SUB3_V1.0_20220617.pdf).
