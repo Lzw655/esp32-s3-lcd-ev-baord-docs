@@ -85,7 +85,7 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
 
     下图是 ST7789 数据手册上部分 SPI 功能时序图，后续将以它为例介绍各个参数如何配置。
 
-    <div align=center ><img src="./static/st7789_spi_timing.png" width=600/></div>
+    <div align=center ><img src="../_static/st7789_spi_timing.png" width=600/></div>
 
     a. `spi_mode`: 取决于 SCK 时钟线的 CPOL（极性）和 CPHA（相位）。**CPOL** 可以简单理解为 CS 使能后 SCK 在第几个跳变沿采样，0 为第 1 个跳变沿，1 为第 2 个跳变沿；**CPHA** 可以简单理解为 SCK 空闲时电平，0 为低电平，1 为高电平。它们的对应关系如下表所示：
 

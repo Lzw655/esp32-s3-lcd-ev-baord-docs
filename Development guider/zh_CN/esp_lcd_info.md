@@ -16,14 +16,14 @@ ESP 的 LCD 驱动位于 **ESP-IDF** 下的 [components/esp_lcd](https://github.
 ## 非 RGB 接口
 
 ### 硬件框架
-<div align=center ><img src="./static/Non-RGB_hardware_flow.png" width=400/></div>
+<div align=center ><img src="../_static/Non-RGB_hardware_flow.png" width=400/></div>
 <div align=center>图1  非 RGB 接口硬件框架</div>
 
 包含 I2C、SPI 以及 8080 接口，这类屏幕上的驱动 IC 内部使用一个整帧大小的显存 GRAM，ESP 只需要把**刷屏数据**（局部大小）传给驱动 IC，驱动 IC 会把数据保存到显存中，并按照自身的刷新速率把**显示数据**（整帧大小）显示到屏幕上。
 
 ### 软件流程
 
-<div align=center ><img src="./static/Non-RGB_software_flow.png" width=150/></div>
+<div align=center ><img src="../_static/Non-RGB_software_flow.png" width=150/></div>
 <div align=center>图2  非 RGB 接口软件流程</div>
 
 1. **初始化总线**：对接口总线进行配置和初始化，若同一总线挂载多个设备则仅需初始化一次
@@ -39,14 +39,14 @@ ESP 的 LCD 驱动位于 **ESP-IDF** 下的 [components/esp_lcd](https://github.
 
 ### 硬件框架
 
-<div align=center ><img src="./static/RGB_hardware_flow.png" width=400/></div>
+<div align=center ><img src="../_static/RGB_hardware_flow.png" width=400/></div>
 <div align=center>图3  RGB 接口硬件框架</div>
 
 这类屏幕上的驱动 IC 不使用显存 GRAM，ESP 在自身内部维护至少一个整帧大小的 GRAM （默认放置于 PSRAM 内），通过 DMA 和 RGB 接口将 GRAM 内全部的刷屏数据传给屏幕上的驱动 IC，驱动 IC 将其作为显示数据直接驱动显示电路工作。
 
 ### 软件流程
 
-<div align=center ><img src="./static/RGB_software_flow.png" width=150/></div>
+<div align=center ><img src="../_static/RGB_software_flow.png" width=150/></div>
 <div align=center>图4  RGB 接口软件流程</div>
 
 1. **配置 LCD 寄存器**（可选）：大部分 RGB 屏幕采用 “三线 SPI + RGB” 接口形式，需要通过 SPI 接口对内部寄存器进行初始化配置，这类屏幕的详细信息请参考[资料](https://focuslcds.com/3-wire-spi-parallel-rgb-interface-fan4213/)。由于该操作仅在 LCD 初始化时进行一次，且对通信速率要求不高，可以使用 IO（ESP 或 IO 扩展芯片）模拟 SPI 进行实现。
