@@ -25,7 +25,7 @@ ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &bus_cfg, SPI_DMA_CH_AUTO));
 
 1. 如果 LCD 驱动 IC 配置为 **Interface-I** 型（见 [LCD 硬件详解](./esp_lcd_hardware.md#interface-iii-模式)），仅需设置 `mosi_io_num` 为其数据线 IO，将 `miso_io_num` 设置为 -1。
 
-2. `max_transfer_sz` 参数仅用于驱动内部对用户传输数据的大小进行判断，若超出范围则报错，并不是内部创建 buffer 的大小，而且 SPI 只会在传输 PSRAM 内存时动态创建同等大小的 DMA buffer，因为 SPI 驱动不支持 DMA 传输 PSRAM 内存。**需注意**，单次刷屏的字节上限不仅受限于 `max_transfer_sz`，而且受限于硬件寄存器 `SPI_LL_DATA_MAX_BIT_LEN`（不同系列芯片数值不同，可在 ESP-IDF 中搜索到），**为保证程序正常运行**，它们的大小关系应满足 `单次传输字节数 <= max_transfer_sz <= 2^(SPI_LL_DATA_MAX_BIT_LEN - 3)`。
+2. `max_transfer_sz` 参数仅用于驱动内部对用户传输数据的大小进行判断，若超出范围则报错，并不是内部创建 buffer 的大小，而且 SPI 只会在传输 PSRAM 内存时动态创建同等大小的 DMA buffer，因为 SPI 驱动不支持 DMA 传输 PSRAM 内存。**需注意**，单次刷屏的字节上限不仅受限于 `max_transfer_sz`，而且受限于硬件寄存器位宽 `SPI_LL_DATA_MAX_BIT_LEN`（不同系列芯片数值不同，可在 ESP-IDF 中搜索到），**为保证程序正常运行**，它们的大小关系应满足 `单次传输字节数 <= max_transfer_sz <= (SPI_LL_DATA_MAX_BIT_LEN >> 3)`。
 
 3. 目前 esp_lcd 不支持驱动 QSPI LCD，但是可以自行通过 SPI 实现驱动。
 
