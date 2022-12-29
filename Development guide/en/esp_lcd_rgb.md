@@ -1,20 +1,20 @@
-# RGB LCD 应用代码详解
+# RGB LCD application code details 
 
-* 详细说明见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#rgb-interfaced-lcd)
-* 如果不需要 SPI 接口进行配置的话，参考的示例工程位于 ESP-IDF 中 [examples/peripherals/lcd/rgb_panel](https://github.com/espressif/esp-idf/tree/master/examples/peripherals/lcd/rgb_panel)
-* 如果需要 SPI 的话（即 3-line SPI + RGB），参考的示例工程位于 ESP-BSP 中 [examples/display_lvgl_demos](https://github.com/espressif/esp-bsp/tree/master/examples/display_lvgl_demos)，该示例中 480x480 LCD 子板为 “3-line SPI + RGB”，而 800x480 LCD 子板仅为 “RGB”
-* 下面以常见的 “3-line SPI + RGB” 为例，对代码中各阶段具体的配置参数进行讲解
+* For more details [Doc](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#rgb-interfaced-lcd).
+* If the SPI interface is not required for configuration, the reference example project is located in the ESP-IDF [examples/peripherals/lcd/rgb_panel](https://github.com/espressif/esp-idf/tree/master/examples/peripherals/lcd/rgb_panel)
+* If SPI is required (i.e. 3-line SPI+RGB), the reference example project is located in ESP-BSP [examples/display_lvgl_demos](https://github.com/espressif/esp-bsp/tree/master/examples/display_lvgl_demos)，In this example, the 480x480 LCD sub-board is "3-line SPI+RGB", while the 800x480 LCD sub-board is only "RGB"
+* Take the common "3-line SPI+RGB" as an example to explain the specific configuration parameters in each stage of the code
 
-## LCD 初始化配置
+## LCD initialize configuration 
 
-本示例采用了 IO 扩展芯片（TCA9554）来模拟 SPI 时序，**用户也可以通过硬件 SPI 或芯片 IO 模拟 SPI**。
+In this example, an IO expansion chip (TCA9554) is used to simulate SPI timing. **Users can also simulate SPI through hardware SPI or chip IO**.
 
 ```
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_io_expander_tca9554.h"`
 
-/******************* 请根据实际情况修改 *******************/
+/******************* Please modify according to the actual situation*******************/
 #define LCD_CONFIG_DATA_LEN_MAX         (52)
 
 #define Delay(t)        vTaskDelay(pdMS_TO_TICKS(t))
@@ -22,7 +22,7 @@
 #define CS(io, n)       BSP_ERROR_CHECK_RETURN_ERR(esp_io_expander_set_level(io, BSP_LCD_SPI_CS, n))
 #define SCK(io, n)      BSP_ERROR_CHECK_RETURN_ERR(esp_io_expander_set_level(io, BSP_LCD_SPI_SCK, n))
 #define SDO(io, n)      BSP_ERROR_CHECK_RETURN_ERR(esp_io_expander_set_level(io, BSP_LCD_SPI_SDO, n))
-/******************* 请根据实际情况修改 *******************/
+/******************* Please modify according to the actual situation*******************/
 
 /**************************************************************************************************
  *
@@ -53,7 +53,7 @@ static esp_err_t spi_write_cmd(esp_io_expander_handle_t io, uint16_t data)
     CS(io, 0);
     udelay(10);
 
-    spi_write(io, (data & 0x00FF));  // 3-line 模式下写数据 DC 位要清 0
+    spi_write(io, (data & 0x00FF));  // In 3-line mode write data DC bit must be cleared to 0
 
     udelay(10);
     CS(io, 1);
@@ -70,7 +70,7 @@ static esp_err_t spi_write_data(esp_io_expander_handle_t io, uint16_t data)
     udelay(10);
 
     data &= 0x00FF;
-    data |= 0x0100;     // 3-line 模式下写数据 DC 位要置 1
+    data |= 0x0100;     // In 3-line mode, write data DC bit must be set to 1
     spi_write(io, data);
 
     udelay(10);
@@ -93,12 +93,12 @@ typedef struct {
 } lcd_config_data_t;
 
 const static lcd_config_data_t LCD_CONFIG_CMD[] = {
-/******************* 请根据实际情况修改 *******************/
+/******************* Please modify according to the actual situation *******************/
     {0xf0, {0x55, 0xaa, 0x52, 0x08, 0x00}, 5},
     {0xf6, {0x5a, 0x87}, 2},
     {0x11, {0x00}, 0},
     ...
-/******************* 请根据实际情况修改 *******************/
+/******************* Please modify according to the actual situation *******************/
 
     {0x00, {0x00}, 0xff},
 };
@@ -126,39 +126,38 @@ static esp_err_t lcd_config(esp_io_expander_handle_t io_expander)
 }
 ```
 
-* 本示例模拟的 SPI 时序为**模式 0**（CPOL=0,CPHA=0），用户需要查阅 LCD 驱动 IC 数据手册来确认
+* The SPI timing simulated in this example is **Mode 0** (CPOL=0, CPHA=0). Users need to refer to the LCD driver IC datasheet to confirm
+* Using the example template mainly requires the following modifications:
 
-* 使用示例模板主要需要进行如下修改：
+    1. `CS()、SCK()、SDO()` Macro: can be modified to chip IO to simulate SPI
 
-    1. `CS()、SCK()、SDO()` 宏：可以修改为芯片 IO 来模拟 SPI
+    2. `LCD_CONFIG_CMD` Array: Modify according to the configuration data given by the screen factory, and modify the `LCD_CONFIG_DATA_LEN_MAX` Macro according to the maximum number of bytes
 
-    2.  `LCD_CONFIG_CMD` 数组：根据屏厂给定的配置数据进行修改，同时根据最大字节数修改 `LCD_CONFIG_DATA_LEN_MAX` 宏
+    3. `lcd_config()` Function: can be modified to chip IO to simulate SPI and set special operations (such as delay, etc.)
 
-    3. `lcd_config()` 函数：可以修改为芯片 IO 来模拟 SPI，设置特殊操作（如延时等）
+* For common st, ili, and gc series LCD driver ICs, there are two commands in the initialization configuration that need attention. Sometimes the color display is not normal because the following commands do not match the hardware:
 
-* 对于常见 st、ili、gc 系列 LCD 驱动 IC，初始化配置中有两个命令需要注意下，有时颜色显示不正常可能是因为下列命令与硬件不符合导致的：
+    1. **COLCTRL（CDh)**: The **MDT** bit determines how many data lines are used by **18-bit RGB666**, as shown in the figure below
 
-    1. **COLCTRL（CDh）**：其中 **MDT** 位决定了 **18-bit RGB666** 采用了几根数据线，如下图所示
+        <div align=center ><img src="../_static/cmd_control.png" width=600/></div>
 
-        <div align=center ><img src="./static/cmd_control.png" width=600/></div>
+        It needs to be set according to the specific hardware connection method, MDT=0(CDH=00): D[21:16]=R,D[13:8]=G,D[5:0]=B; MDT=1( CDH=08): D[17:12]=R,D[11:6]=G,D[5:0]=B
 
-        需要结合具体的硬件连接方式进行设置，MDT=0(CDH=00): D[21:16]=R,D[13:8]=G,D[5:0]=B; MDT=1(CDH=08): D[17:12]=R,D[11:6]=G,D[5:0]=B
+    2. **COLMOD（3Ah)**: The **VIPF[2:0]** bit determines the LCD color type (input data format), as shown in the figure below
 
-    2. **COLMOD（3Ah）**：其中 **VIPF[2:0]** 位决定了 LCD 的颜色类型（输入数据格式），如下图所示
+        <div align=center ><img src="../_static/cmd_colmod.png" width=400/></div>
 
-        <div align=center ><img src="./static/cmd_colmod.png" width=400/></div>
+        It needs to be set according to the specific hardware connection method, 55/50=16-bit(RGB565); 66=18-bit(RGB666); 77 or default=24-bit(RGB888)
 
-        需要结合具体的硬件连接方式进行设置，55/50=16-bit(RGB565);66=18-bit(RGB666);77或默认=24-bit(RGB888)
-
-## 配置 esp_lcd_panel
+## Configure esp_lcd_panel
 
 ```
 #include "driver/gpio.h"
-#include "esp_lcd_panel_io.h"       // 依赖的头文件
+#include "esp_lcd_panel_io.h"       // dependent header files
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_panel_rgb.h"
 
-/******************* 请根据实际情况修改 *******************/
+/******************* Please modify according to the actual situation *******************/
 #define BSP_LCD_VSYNC                   (GPIO_NUM_3)
 #define BSP_LCD_HSYNC                   (GPIO_NUM_46)
 #define BSP_LCD_DISP                    (GPIO_NUM_NC)
@@ -190,20 +189,20 @@ static esp_err_t lcd_config(esp_io_expander_handle_t io_expander)
 #define BSP_LCD_VSYNC_FRONT_PORCH       (40)
 #define BSP_LCD_VSYNC_PULSE_WIDTH       (15)
 #define BSP_LCD_PCLK_ACTIVE_NEG         (false)
-/******************* 请根据实际情况修改 *******************/
+/******************* Please modify according to the actual situation *******************/
 
 IRAM_ATTR static bool on_vsync_event(esp_lcd_panel_handle_t panel, const esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
 {
     BaseType_t need_yield = pdFALSE;
 
-    // 此处执行需要的操作
+    // perform required operations here
 
-    return (need_yield == pdTRUE);          // 返回 ture 表示需要 Freertos 调度器重新调度任务
+    return (need_yield == pdTRUE);          // Returning true indicates that the Freertos scheduler needs to reschedule the task
 }
 
 esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
 {
-    /* 如果采用 “3-line SPI + RGB” 需要先对屏幕进行初始化配置 */
+    /* If you use "3-line SPI + RGB", you need to initialize the screen first */
     // BSP_ERROR_CHECK_RETURN_ERR(lcd_config((esp_io_expander_handle_t)arg));
 
     esp_lcd_panel_handle_t panel_handle = NULL;
@@ -271,41 +270,41 @@ esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
 }
 ```
 
-* **帧率**：分为接口帧率、渲染帧率和显示帧率
+* **Frame rate**: divided into interface frame rate, rendering frame rate and display frame rate
 
-  1. **接口帧率**是指 RGB 接口向 LCD 驱动 IC 刷屏传输数据的帧率，决定了屏幕显示帧率的上限，计算公式如下：
+  1. **Interface frame rate** refers to the frame rate at which the RGB interface transmits data to the LCD driver IC for flashing the screen, which determines the upper limit of the screen display frame rate. The calculation formula is as follows:
 
       $$
-      接口帧率 = \frac{pclk\_hz}{(h\_res + hsync\_back_porch + hsync\_front\_porch + hsync\_pulse\_width) * (v\_res + vsync\_back_porch + vsync\_front\_porch + vsync\_pulse\_width)}
+      Interface frame rate = \frac{pclk\_hz}{(h\_res + hsync\_back_porch + hsync\_front\_porch + hsync\_pulse\_width) * (v\_res + vsync\_back_porch + vsync\_front\_porch + vsync\_pulse\_width)}
       $$
 
-  2. **渲染帧率**是指需要 CPU 计算渲染出动画效果（或图片编解码）的帧率，如 LVGL 实时统计的 fps，一般利用 LVGL Music Demo 统计的平均帧率来表征；
+  2. **Rendering frame rate** refers to the frame rate that requires the CPU to calculate and render animation effects (or image codecs), such as the fps of LVGL real-time statistics, generally represented by the average frame rate of LVGL Music Demo statistics;
 
-  3. **显示帧率**是指在屏幕上实际显示的动画效果的帧率，表示实际肉眼看到到的动画的流畅度，由接口帧率和渲染帧率共同决定，计算公式如下：
+  3. **Display frame rate** refers to the frame rate of the animation effect actually displayed on the screen, indicating the fluency of the animation actually seen by the naked eye. It is determined by the interface frame rate and the rendering frame rate. The calculation formula is as follows:
 
     $$
-    显示帧率 = min(接口帧率, 渲染帧率)
+    Display frame rate = min(interface frame rate, rendering frame rate)
     $$
 
-* **Bounce Buffer 机制**：驱动默认从 PSRAM 通过 DMA 传输数据到外设实现刷屏，而 Bounce buffer 通过指定大小的内部 SRAM，首先将数据从 PSRAM 通过 memcpy 搬运到内部 SRAM，然后通过 DMA 再传输至外设，以此来提升 PCLK 的设置上限，也能够避免操作 flash 引起的屏幕漂移问题，但是会提高 CPU 占用率，降低实际显示帧率，详细讲解见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)
+* **Bounce Buffer mechanism**: The driver defaults to transfer data from PSRAM to the peripheral via DMA to refresh the screen, while the Bounce buffer first transfers the data from PSRAM to the internal SRAM via memcpy through the specified size of the internal SRAM, and then transfers the data to the peripheral via DMA. In this way, the upper limit of PCLK setting can be increased, and the screen drift problem caused by operating flash can also be avoided, but it will increase CPU usage and reduce the actual display frame rate. For detailed explanation, see [Doc](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)
 
-* **`esp_lcd_panel_draw_bitmap()`**：与 8080/SPI LCD 驱动不同，RGB LCD 刷屏是从指定内存地址搬运刷屏数据到 PSRAM 内的帧 buffer，是采用 memcpy 的方式进行内存搬运，也就是说该函数调用完成就表示数据搬运完成，此时可以对原始内存区域进行修改（如让 LVGL 渲染计算），无需通过回调函数等待
+* **`esp_lcd_panel_draw_bitmap()`**：Different from the 8080/SPI LCD driver, the RGB LCD refresh screen transfers the screen refresh data from the specified memory address to the frame buffer in PSRAM, and uses the memcpy method for memory transfer, which means that the data transfer is completed when the function call is completed. At this time, the original memory area can be modified (for example, let LVGL render and calculate), without waiting through the callback function
 
-* **防撕裂方案**：通过双 buffer、手动刷新模式和 LVGL 的 buffering-mode，可以实现防撕裂方案，参考[例程](https://github.com/espressif/esp-dev-kits/tree/master/esp32-s3-lcd-ev-board/examples/lvgl_demos)
+* **Anti-tearing solution**: Through double buffer, manual refresh mode and buffering-mode of LVGL, the anti-tearing solution can be realized, refer to [routine](https://github.com/espressif/esp-dev-kits/tree/master/esp32-s3-lcd-ev-board/examples/lvgl_demos)
 
-* **可用的 API**：后续可以利用 `panel_handle` 和 *esp_lcd_panel_ops.h* 中的 API 来操作 LCD，如刷屏函数 `esp_lcd_panel_draw_bitmap()`。除此之外，还可以调用 *esp_lcd_panel_rgb.h* 中 RGB 特有的 API，如设置 PCLK 函数 `esp_lcd_rgb_panel_set_pclk()`
+* **Available API**: You can use the APIs in `panel_handle` and *esp_lcd_panel_ops.h* to operate the LCD, such as the refresh function `esp_lcd_panel_draw_bitmap()`. In addition, you can also call the RGB-specific API in *esp_lcd_panel_rgb.h*, such as setting the PCLK function `esp_lcd_rgb_panel_set_pclk()`
 
-## 屏幕偏移的解决方法
+## Workaround for screen offset
 
-- **配置方面**
-  - 提高 PRAM 和 flash 带宽，设置 flash 为  QIO 120M，PSRAM 为 Octal 120M
-  - 开启 `CONFIG_COMPILER_OPTIMIZATION_PERF`
-  - 降低 data_cache_line_size 到 32 Byte
-  - 开启 `CONFIG_SPIRAM_FETCH_INSTRUCTIONS` 和 `CONFIG_SPIRAM_RODATA`
-  - 开启 `CONFIG_LCD_RGB_RESTART_IN_VSYNC`，可能会导致闪花屏和降帧率，一般不推荐，可以尝试
-- **应用方面**
-  - 长时间写 flash，比如连续执行 OTA、NVS 等写操作，可以分段、分时进行
-  - （仅 master）长时间写 flash，比如连续执行 OTA、NVS 等写操作，可以设置 RGB 为 `Bounce Buffer` 模式，详细讲解见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)（不能使能 `GDMA_ISR_IRAM_SAFE`，否则会 Cache 报错）
-  - 短时操作 flash 导致漂移的情况，如 wifi 连接等操作前后，可以在操作前调用 `esp_lcd_rgb_panel_set_pclk()` 降低 PCLK（如 6MHz）并延时大约 20ms（RGB 刷完一帧的时间），然后在操作结束后提高 PCLK 至原始水平，期间可能会造成短暂的闪白屏现象
-  - 使能 `esp_lcd_rgb_panel_config_t` 中的 `flags.refresh_on_demand`，通过调用 `esp_lcd_rgb_panel_refresh()` 接口手动刷屏，在保证屏幕不闪白的情况下尽量降低刷屏频率
-  - 如果无法避免，可以调用 `esp_lcd_rgb_panel_restart()`  接口重置 RGB 时序，防止永久性漂移
+- **configuration**
+   - Improve PRAM and flash bandwidth, set flash to QIO 120M, PSRAM to Octal 120M
+   - Enable `CONFIG_COMPILER_OPTIMIZATION_PERF`
+   - Reduce data_cache_line_size to 32 Byte
+   - Enable `CONFIG_SPIRAM_FETCH_INSTRUCTIONS` and `CONFIG_SPIRAM_RODATA`
+   - Turn on `CONFIG_LCD_RGB_RESTART_IN_VSYNC.` It may cause a flashing screen and frame rate drop, which is generally not recommended, but you can try
+- **Applications**
+   - Write flash for a long time, such as continuous execution of OTA, NVS, and other write operations, which can be segmented and time-shared
+   - (Master only) To write flash for a long time, such as continuously performing OTA, NVS, and other writing operations, you can set RGB to `Bounce Buffer` mode. See [Doc](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer). (`GDMA_ISR_IRAM_SAFE` cannot be enabled. Otherwise the Cache will report an error)
+   - Short-term operation of flash causes drift, such as before and after wifi connection. You can call `esp_lcd_rgb_panel_set_pclk()` before the operation to reduce the PCLK (such as 6MHz) and delay about 20ms (the time for RGB to complete one frame) and then Increase PCLK to the original level after the operation, which may cause a short-term flashing white screen phenomenon
+   - Enable `flags.refresh_on_demand` in `esp_lcd_rgb_panel_config_t,` manually refresh the screen by calling the `esp_lcd_rgb_panel_refresh()` interface, and reduce the frequency of refreshing the screen as much as possible while ensuring that the screen does not flash white
+   - If unavoidable, you can call the `esp_lcd_rgb_panel_restart()` interface to reset the RGB timing to prevent permanent drift
