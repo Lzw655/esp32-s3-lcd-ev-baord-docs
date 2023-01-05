@@ -19,7 +19,7 @@ ESP32-C3-LCD-EV-BOARD
 开发板概述
 ===================
 
-ESP32-C3-LCD-EV-BOARD 是一款基于 ESP32-C3 芯片的屏幕应用开发板，通过配合不同类型的屏幕子板，可以驱动 IIC 和 SPI 接口的显示屏，同时它还使用了拨轮编码器，可以实现与屏幕交互的功能。由于 ESP32-C3 具有成本低、功耗低、性能强的特点，能够满足用户基本的 GUI 交互需求，使得其在小尺寸屏幕的应用场景中占据优势。
+ESP32-C3-LCD-EV-BOARD 是一款基于 ESP32-C3 芯片的屏幕应用开发板，通过配合不同类型的屏幕子板，可以驱动 IIC 和 SPI 接口的显示屏，同时它还使用了拨轮编码器开关，可以实现与屏幕交互的功能。由于 ESP32-C3 具有成本低、功耗低、性能强的特点，能够满足用户基本的 GUI 交互需求，使得其在小尺寸屏幕的应用场景中占据优势。
 
 .. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-isometric-raw.png
     :align: center
@@ -81,125 +81,51 @@ ESP32-C3-LCD-EV-BOARD 开发板由主板和子板组成。
    * - 主要组件
      - 介绍
    * - ESP32-C3-MINI-1 模组
-     - ESP32-C3-MINI-1 模组是一款通用型 Wi-Fi + 低功耗蓝牙 MCU 模组，搭载 ESP32-S3 系列芯片，内置 16 MB flash 以及 8MB PSRAM。除具有丰富的外设接口外，模组还拥有强大的神经网络运算能力和信号处理能力，适用于 AIoT 领域的多种应用场景。
+     - ESP32-C3-MINI-1 模组是一款通用型 Wi-Fi + 低功耗蓝牙 MCU 模组，搭载 ESP32-C3 系列芯片，内置 4 MB flash 以及 400 KB SRAM。
    * - Reset 按键
      - 单独按下此按键会重置系统。
    * - Boot 按键
      - 长按 Boot 键时，再按 Reset 键可启动固件上传模式，然后便可通过串口或 USB 上传固件。
-   * - 扩展连接器
-     - 可供连接所有的 IO 扩展芯片管脚、系统电源管脚以及部分模组管脚。
-   * - I/O 扩展芯片
-     - `TCA9554 <https://www.ti.com/lit/gpn/tca9554>`_ 是一款 8 位通用并行输入和输出 I/O 扩展芯片，它通过两线 I2C 通信控制 IO 口的模式以及输出电平，丰富了系统的 IO 应用场景。
+   * - 预留 IO 连接器
+     - 通过 2.54 mm 间距的连接器可供连接系统电源管脚以及预留的部分模组管脚。
    * - LCD 子板连接器
-     - 通过 2.54 mm 间距的连接器可以连接三种不同类型的 LCD 子板。
+     - 通过 2.54 mm 间距的连接器可以连接 1.28 英寸 LCD 子板。
    * - LED
      - 具有 RGB 三色显示功能，可供用户配置用来做状态行为指示。
+   * - 拨轮编码器开关
+     - 同时具有 360° 旋转编码器和按压开关的功能，用于实现对屏幕 GUI 的控制操作。
+   * - 电源开关
+     - 电源拨动开/关：向 ON 拨动开启开发板电源，向 OFF 拨动关闭开发板电源。
+   * - Prog 连接器
+     - 通过 1.27 mm 间距的连接器可以连接 `ESP-Prog <https://docs.espressif.com/projects/espressif-esp-dev-kits/zh_CN/latest/other/esp-prog/user_guide.html>`_ 的 Program 接口，用于固件下载与调试。
    * - USB-to-USB 端口
-     - 为整个系统提供电源（USB-to-USB 端口和 USB-to-UART 端口两者选一）。建议使用至少 5V/2A 电源适配器供电，保证供电稳定。该端口用于 PC 端与 ESP32-C3-MINI-1 模组的 USB 通信。
-   * - USB-to-UART 端口
-     - 为整个系统提供电源（USB-to-USB 端口和 USB-to-UART 端口两者选一）。建议使用至少 5V/2A 电源适配器供电，保证供电稳定。该端口用于 PC 端与 ESP32-C3-MINI-1 模组的串口通信。
-   * - 左侧麦克风
-     - 板载麦克风，连接至 ADC。
-   * - 右侧麦克风
-     - 板载麦克风，连接至 ADC。
-   * - 音频模数转换器
-     - `ES7210 <http://www.everest-semi.com/pdf/ES7210%20PB.pdf>`_ 是一款用于麦克风阵列应用的高性能、低功耗 4 通道音频模数转换器，同时具备声学回声消除 (AEC) 功能，非常适合音乐和语音应用。
-   * - USB-to-UART 桥接器
-     - 单芯片 USB-UART 桥接器 CP2102N 为软件下载和调试提供高达 3 Mbps 的传输速率。
-   * - 音频编解码芯片
-     - `ES8311 <http://www.everest-semi.com/pdf/ES8311%20PB.pdf>`_ 是一种低功耗单声道音频编解码器，包含单通道 ADC、单通道 DAC、低噪声前置放大器、耳机驱动器、数字音效、模拟混音和增益功能。它通过 I2S 和 I2C 总线与 ESP32-C3-MINI-1 模组连接，以提供独立于音频应用程序的硬件音频处理。
-   * - 音频功率放大器
-     - NS4150 是一款低 EMI、3 W 单声道 D 类音频功率放大器，用于放大来自音频编解码芯片的音频信号，以驱动扬声器。
-   * - 扬声器连接器
-     - 可通过音频功率放大器的支持，实现外部扬声器播放功能。
+     - 为整个系统提供电源。建议使用至少 5V/2A 电源适配器供电，保证供电稳定。该端口用于 PC 端与 ESP32-C3-MINI-1 模组的 USB 通信。
 
 
 LCD 子板
 ^^^^^^^^
 
-主板可搭配以下三种不同类型的子板使用：
-
-.. list-table::
-   :widths: 30 15 15 15 15
-   :header-rows: 1
-
-   * - 子板名称
-     - 屏幕（英寸）
-     - 分辨率 (px)
-     - LCD 驱动芯片（接口）
-     - 触摸驱动芯片
-   * - ESP32-S3-LCD_Ev_Board_SUB1
-     - 0.96
-     - 128 x 64
-     - SSD1315 (I2C)
-     - N/A
-   * -
-     - 2.40
-     - 320 x 240
-     - ST7789V (SPI)
-     - XTP2046
-   * - ESP32-S3-LCD_Ev_Board_SUB2
-     - 3.50
-     - 480 x 320
-     - ST7796S (8080)
-     - GT911
-   * -
-     - 3.95
-     - 480 x 480
-     - GC9503CV (RGB)
-     - FT5x06
-   * - ESP32-S3-LCD_Ev_Board_SUB3
-     - 4.30
-     - 800 x 480
-     - 未提供 (RGB)
-     - GT1151
-
-
-- **ESP32-C3-LCD-EV-BOARD_SUB1** 子板提供了两种屏幕接口，分别支持连接一块 2.4 英寸 SPI 接口屏或者一块 0.96 英寸 I2C 接口屏。该子板暂未做适配，此处不做进一步讲解。
-
-- **ESP32-C3-LCD-EV-BOARD_SUB2** 子板提供了两种屏幕接口，分别支持连接一块 RGB 接口屏或者一块 8080 并口屏。当前子板贴装了一块 3.95 英寸、RGB565 接口、分辨率为 480x480 的触摸屏，该屏使用的 LCD 驱动芯片型号为 GC9503CV，触摸驱动芯片型号为 FT5x06。
+**ESP32-C3-LCD-EV-BOARD_DB** 子板支持 1.28 英寸、SPI 接口、分辨率为 240x240 的 LCD 屏，该屏使用的驱动芯片型号为 GC9A01。
 
 .. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-sub2-front.png
     :align: center
     :scale: 20%
-    :alt: ESP32-C3-LCD-EV-BOARD_SUB2 - 正面（点击放大）
+    :alt: ESP32-C3-LCD-EV-BOARD_DB - 正面（点击放大）
 
-    ESP32-C3-LCD-EV-BOARD_SUB2 - 正面（点击放大）
+    ESP32-C3-LCD-EV-BOARD_DB - 正面（点击放大）
 
 .. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-sub2-back.png
     :align: center
     :scale: 20%
-    :alt: ESP32-C3-LCD-EV-BOARD_SUB2 - 反面（点击放大）
+    :alt: ESP32-C3-LCD-EV-BOARD_DB - 反面（点击放大）
 
-    ESP32-C3-LCD-EV-BOARD_SUB2 - 反面（点击放大）
-
-- **ESP32-C3-LCD-EV-BOARD_SUB3** 子板仅支持 4.3 英寸、RGB565 接口、分辨率为 800x480 的触摸屏，该屏使用触摸驱动芯片型号为 GT1151。
-
-.. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-sub3-front.png
-    :align: center
-    :scale: 20%
-    :alt: ESP32-C3-LCD-EV-BOARD_SUB3 - 正面（点击放大）
-
-    ESP32-C3-LCD-EV-BOARD_SUB3 - 正面（点击放大）
-
-.. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-sub3-back.png
-    :align: center
-    :scale: 20%
-    :alt: ESP32-C3-LCD-EV-BOARD_SUB3 - 反面（点击放大）
-
-    ESP32-C3-LCD-EV-BOARD_SUB3 - 反面（点击放大）
+    ESP32-C3-LCD-EV-BOARD_DB - 反面（点击放大）
 
 
 软件支持
 ----------------
 
-ESP32-C3-LCD-EV-BOARD 的开发框架为 `ESP-IDF <https://github.com/espressif/esp-idf>`_。ESP-IDF 是基于 FreeRTOS 的乐鑫 SoC 开发框架，具有众多组件，包括 LCD、ADC、RMT、SPI 等。开发板应用示例存放在 :dev-kits:`Examples <ESP32-C3-LCD-EV-BOARD/examples>` 中，在示例目录下输入 ``idf.py menuconfig`` 可以配置工程选项。
-
-.. note::
-
-  - ESP-IDF 的版本要求在 v5.0 及以上，推荐使用 release/v5.0 分支开发。
-  - ESP32-S3 RGB 驱动仅支持 16 位 RGB565 接口和 8 位 RGB888 接口。
-  - 通过补丁使 ESP-IDF 支持 120 MHz 的 8 位 PSRAM 配置，请参考 :dev-kits:`此例<ESP32-C3-LCD-EV-BOARD/factory>`。
+ESP32-C3-LCD-EV-BOARD 的开发框架为 `ESP-IDF <https://github.com/espressif/esp-idf>`_。ESP-IDF 是基于 FreeRTOS 的乐鑫 SoC 开发框架，具有众多组件，包括 LCD、ADC、RMT、SPI 等。开发板应用示例存放在 :dev-kits:`Examples <esp32-c3-lcd-ev-board/examples>` 中，在示例目录下输入 ``idf.py menuconfig`` 可以配置工程选项。
 
 
 应用程序开发
@@ -221,20 +147,14 @@ ESP32-C3-LCD-EV-BOARD 的开发框架为 `ESP-IDF <https://github.com/espressif/
   请确保使用适当的 USB 数据线。部分数据线仅可用于充电，无法用于数据传输和程序烧录。
 
 
-可选硬件
-^^^^^^^^
-
-- 1 x 扬声器
-
-
 硬件设置
 --------
 
 准备开发板，加载第一个示例应用程序：
 
 1. 连接 LCD 子板至 **LCD 子板连接器** 端口。
-2. 插入 USB 数据线，分别连接 PC 与开发板的两个 USB 端口之一。
-3. LCD 屏幕亮起，可以用手指与触摸屏进行交互。
+2. 插入 USB 数据线，分别连接 PC 与开发板的 USB 端口。
+3. LCD 屏幕亮起，可以使用拨轮编码器开关控制 GUI。
 
 硬件设置完成，接下来可以进行软件设置。
 
@@ -269,184 +189,101 @@ GPIO 分配列表
      - GND
      - 接地
    * - 2
+     - GND
+     - 接地
+   * - 3
      - 3V3
      - 供电
-   * - 3
-     - EN
-     - RESET
    * - 4
-     - IO4
-     - LED
+     - NC
+     - 未连接
    * - 5
-     - IO5
-     - I2S_MCLK
+     - IO2
+     - 预留
    * - 6
-     - IO6
-     - I2S_CODEC_DSDIN
-   * - 7
-     - IO7
-     - I2S_LRCK
-   * - 8
-     - IO15
-     - I2S_ADC_SDOUT
-   * - 9
-     - IO16
-     - I2S_SCLK
-   * - 10
-     - IO17
-     - LCD_DE
-   * - 11
-     - IO18
-     - I2C_SCL
-   * - 12
-     - IO8
-     - I2C_SDA
-   * - 13
-     - IO19
-     - USB_D-
-   * - 14
-     - IO20
-     - USB_D+
-   * - 15
      - IO3
-     - LCD_VSYNC
-   * - 16
-     - IO46
-     - LCD_HSYNC
-   * - 17
-     - IO9
-     - LCD_PCLK
-   * - 18
-     - IO10
-     - LCD_DATA0
-   * - 19
-     - IO11
-     - LCD_DATA1
-   * - 20
-     - IO12
-     - LCD_DATA2
-   * - 21
-     - IO13
-     - LCD_DATA3
-   * - 22
-     - IO14
-     - LCD_DATA4
-   * - 23
-     - IO21
-     - LCD_DATA5
-   * - 24
-     - IO47
-     - LCD_DATA6
-   * - 25
-     - IO48
-     - LCD_DATA7
-   * - 26
-     - IO45
-     - LCD_DATA8
-   * - 27
+     - 预留
+   * - 7
+     - NC
+     - 未连接
+   * - 8
+     - EN
+     - Reset
+   * - 9
+     - NC
+     - 未连接
+   * - 10
+     - NC
+     - 未连接
+   * - 11
+     - GND
+     - 接地
+   * - 12
      - IO0
-     - BOOT
+     - LCD_SDA
+   * - 13
+     - IO1
+     - LCD_SCL
+   * - 14
+     - GND
+     - 接地
+   * - 15
+     - NC
+     - 未连接
+   * - 16
+     - IO10
+     - LCD_CS
+   * - 17
+     - NC
+     - 未连接
+   * - 18
+     - IO4
+     - LCD_D/C
+   * - 19
+     - IO5
+     - LCD_BL_CTRL
+   * - 20
+     - IO6
+     - ENCODER_B
+   * - 21
+     - IO7
+     - ENCODER_A
+   * - 22
+     - IO8
+     - LED
+   * - 23
+     - IO9
+     - BOOT, ENCODER_SW
+   * - 24
+     - NC
+     - 未连接
+   * - 25
+     - NC
+     - 未连接
+   * - 26
+     - IO18
+     - 预留
+   * - 27
+     - IO19
+     - 预留
    * - 28
-     - IO35
+     - NC
      - 未连接
    * - 29
-     - IO36
+     - NC
      - 未连接
    * - 30
-     - IO37
-     - 未连接
-   * - 31
-     - IO38
-     - LCD_DATA9
-   * - 32
-     - IO39
-     - LCD_DATA10
-   * - 33
-     - IO40
-     - LCD_DATA11
-   * - 34
-     - IO41
-     - LCD_DATA12
-   * - 35
-     - IO42
-     - LCD_DATA13
-   * - 36
      - RXD0
-     - UART_RXD0
-   * - 37
+     - RXD0
+   * - 31
      - TXD0
-     - UART_TXD0
-   * - 38
-     - IO2
-     - LCD_DATA14
-   * - 39
-     - IO1
-     - LCD_DATA15
-   * - 40
-     - GND
-     - 接地
-   * - 41
-     - EPAD
-     - 接地
-
-
-分配给 IO 扩展芯片的 GPIO 被进一步分配为多个 GPIO。
-
-.. list-table:: IO 扩展芯片 GPIO 分配
-   :header-rows: 1
-   :widths: 20 20 30
-
-   * - IO 扩展器管脚
-     - 管脚名称
-     - 功能
-   * - 1
-     - A0
-     - 接地
-   * - 2
-     - A1
-     - 接地
-   * - 3
-     - A2
-     - 接地
-   * - 4
-     - P0
-     - PA_CTRL
-   * - 5
-     - P1
-     - LCD_SPI_CS
-   * - 6
-     - P2
-     - LCD_SPI_SCK
-   * - 7
-     - P3
-     - LCD_SPI_MOSI
-   * - 8
-     - GND
-     - 接地
-   * - 9
-     - P4
-     - 可做任意用途
-   * - 10
-     - P5
-     - 可做任意用途
-   * - 11
-     - P6
-     - 可做任意用途
-   * - 12
-     - P7
-     - 可做任意用途
-   * - 13
-     - INT
+     - TXD0
+   * - 32-35
+     - NC
      - 未连接
-   * - 14
-     - SCL
-     - I2C_SCL
-   * - 15
-     - SDA
-     - I2C_SDA
-   * - 16
-     - VCC
-     - 供电电压
+   * - 36-53
+     - GND
+     - 接地
 
 
 供电说明
@@ -464,13 +301,25 @@ USB 供电
 
     ESP32-C3-LCD-EV-BOARD - USB-to-USB 电源供电
 
+系统电源供电
+
+.. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-system-ps.png
+    :align: center
+    :scale: 80%
+    :alt: ESP32-C3-LCD-EV-BOARD - 系统电源供电
+
+    ESP32-C3-LCD-EV-BOARD - 系统电源供电
+
 硬件设置选项
 ------------
 
 自动下载
 ^^^^^^^^
 
-- 按下 Boot 和 Reset 键，然后先松开 Reset 键，再松开 Boot 键。
+可以通过两种方式使 ESP 开发板进入下载模式：
+
+- 手动按下 Boot 和 RST 键，然后先松开 RST，再松开 Boot 键。
+- 由 ESP-Prog 控制 ESP 开发板的 EN、IO9 管脚的状态来执行下载。
 
 
 硬件版本
@@ -482,18 +331,18 @@ USB 供电
 样品获取
 ================
 
-此开发板适用于评估 ESP32-C3 的 HMI 方案，尚未公开售卖，如有样品需求请邮件联系 sales@espressif.com。
+此开发板适用于评估 ESP32-C3 的 LCD 方案，尚未公开售卖，如有样品需求请邮件联系 sales@espressif.com。
 
 
 相关文档
 ========
 
--  `ESP32-S3 技术规格书 <https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_cn.pdf>`__
--  `ESP32-C3-MINI-1 技术规格书 <https://www.espressif.com/sites/default/files/documentation/ESP32-C3-MINI-1_wroom-1u_datasheet_cn.pdf>`__
+-  `ESP32-C3 技术规格书 <https://www.espressif.com/sites/default/files/documentation/esp32-c3_datasheet_en.pdf>`__
+-  `ESP32-C3-MINI-1 技术规格书 <https://www.espressif.com/sites/default/files/documentation/esp32-c3-mini-1_datasheet_en.pdf>`__
 -  `乐鑫产品选型工具 <https://products.espressif.com/#/product-selector?names=>`__
--  `esp32-c3-lcd-ev-board-MB 原理图 <../../_static/ESP32-C3-LCD-EV-BOARD/schematics/SCH_ESP32-S3-LCD_EV_Board_MB_V1.1_20220713.pdf>`__
--  `esp32-c3-lcd-ev-board-MB PCB 布局图 <../../_static/ESP32-C3-LCD-EV-BOARD/schematics/PCB_ESP32-S3-LCD_Ev_Board_MB_V1.0_20220610.pdf>`__
--  `esp32-c3-lcd-ev-board-SUB1 原理图 <../../_static/ESP32-C3-LCD-EV-BOARD/schematics/SCH_ESP32-S3-LCD_Ev_Board_SUB1_V1.0_20220617.pdf>`__
--  `esp32-c3-lcd-ev-board-SUB1 PCB 布局图 <../../_static/ESP32-C3-LCD-EV-BOARD/schematics/PCB_ESP32-S3-LCD_Ev_Board_SUB1_V1.0_20220617.pdf>`__
+-  `ESP32-C3-LCD_EV_Board-MB 原理图 <../../_static/ESP32-C3-LCD-EV-BOARD/schematics/SCH_ESP32-C3-LCD_EV_Board_MB_V1.0_20221212.pdf>`__
+-  `ESP32-C3-LCD_EV_Board-MB PCB 布局图 <../../_static/ESP32-C3-LCD-EV-BOARD/schematics/PCB_ESP32-C3-LCD_Ev_Board_MB_V1.0_20221213.pdf>`__
+-  `ESP32-C3-LCD_EV_Board-DB 原理图 <../../_static/ESP32-C3-LCD-EV-BOARD/schematics/SCH_ESP32-C3-LCD_Ev_Board_DB_V1.0_20221207.pdf>`__
+-  `ESP32-C3-LCD_EV_Board-DB PCB 布局图 <../../_static/ESP32-C3-LCD-EV-BOARD/schematics/PCB_ESP32-C3-LCD_EV_Board_DB_V1.0_20221213.pdf>`__
 
 有关本开发板的更多设计文档，请联系我们的商务部门 `sales@espressif.com <sales@espressif.com>`_。
