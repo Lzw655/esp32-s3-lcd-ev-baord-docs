@@ -88,7 +88,7 @@ ESP32-C3-LCD-EV-BOARD 开发板由主板和子板组成。
      - 长按 Boot 键时，再按 Reset 键可启动固件上传模式，然后便可通过串口或 USB 上传固件。
    * - 预留 IO 连接器
      - 通过 2.54 mm 间距的连接器可供连接系统电源管脚以及预留的部分模组管脚。
-   * - LCD 子板连接器
+   * - 屏幕连接器
      - 通过 2.54 mm 间距的连接器可以连接 1.28 英寸 LCD 子板。
    * - LED
      - 具有 RGB 三色显示功能，可供用户配置用来做状态行为指示。
@@ -96,7 +96,7 @@ ESP32-C3-LCD-EV-BOARD 开发板由主板和子板组成。
      - 同时具有 360° 旋转编码器和按压开关的功能，用于实现对屏幕 GUI 的控制操作。
    * - 电源开关
      - 电源拨动开/关：向 ON 拨动开启开发板电源，向 OFF 拨动关闭开发板电源。
-   * - Prog 连接器
+   * - ESP-Prog 连接器
      - 通过 1.27 mm 间距的连接器可以连接 `ESP-Prog <https://docs.espressif.com/projects/espressif-esp-dev-kits/zh_CN/latest/other/esp-prog/user_guide.html>`_ 的 Program 接口，用于固件下载与调试。
    * - USB-to-USB 端口
      - 为整个系统提供电源。建议使用至少 5V/2A 电源适配器供电，保证供电稳定。该端口用于 PC 端与 ESP32-C3-MINI-1 模组的 USB 通信。
