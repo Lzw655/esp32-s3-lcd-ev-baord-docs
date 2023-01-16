@@ -236,7 +236,7 @@ static esp_err_t panel_st7789_init(esp_lcd_panel_t *panel)
     // LCD goes into sleep mode and display will be turned off after power on reset, exit sleep mode first
     esp_lcd_panel_io_tx_param(io, LCD_CMD_SLPOUT, NULL, 0);
     vTaskDelay(pdMS_TO_TICKS(120));
-    for (uint8_t i = 0; vendor_specific_init[i].data_bytes != 0xff; i++) {
+    for (uint16_t i = 0; vendor_specific_init[i].data_bytes != 0xff; i++) {
         esp_lcd_panel_io_tx_param(io, vendor_specific_init[i].cmd, vendor_specific_init[i].data, vendor_specific_init[i].data_bytes & 0x1F);
     }
     esp_lcd_panel_io_tx_param(io, LCD_CMD_COLMOD, (uint8_t []){st7789->colmod_cal}, 1);
