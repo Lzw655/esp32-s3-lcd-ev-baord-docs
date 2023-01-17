@@ -1,11 +1,11 @@
-# RGB LCD application code details 
+# RGB LCD application code details
 
 * For more details [Doc](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#rgb-interfaced-lcd).
 * If the SPI interface is not required for configuration, the reference example project is located in the ESP-IDF [examples/peripherals/lcd/rgb_panel](https://github.com/espressif/esp-idf/tree/master/examples/peripherals/lcd/rgb_panel)
 * If SPI is required (i.e. 3-line SPI+RGB), the reference example project is located in ESP-BSP [examples/display_lvgl_demos](https://github.com/espressif/esp-bsp/tree/master/examples/display_lvgl_demos)，In this example, the 480x480 LCD sub-board is "3-line SPI+RGB", while the 800x480 LCD sub-board is only "RGB"
 * Take the common "3-line SPI+RGB" as an example to explain the specific configuration parameters in each stage of the code
 
-## LCD initialize configuration 
+## LCD initialize configuration
 
 In this example, an IO expansion chip (TCA9554) is used to simulate SPI timing. **Users can also simulate SPI through hardware SPI or chip IO**.
 
@@ -274,17 +274,17 @@ esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
 
   1. **Interface frame rate** refers to the frame rate at which the RGB interface transmits data to the LCD driver IC for flashing the screen, which determines the upper limit of the screen display frame rate. The calculation formula is as follows:
 
-      $$
-      Interface frame rate = \frac{pclk\_hz}{(h\_res + hsync\_back_porch + hsync\_front\_porch + hsync\_pulse\_width) * (v\_res + vsync\_back_porch + vsync\_front\_porch + vsync\_pulse\_width)}
-      $$
+    <div align=center >
+    Interface frame rate = pclk_hz /(h_res + h_back_porch + h_front_porch + h_pulse_width) * (v_res + v_back_porch + v_front_porch + v_pulse_width)
+    </div>
 
   2. **Rendering frame rate** refers to the frame rate that requires the CPU to calculate and render animation effects (or image codecs), such as the fps of LVGL real-time statistics, generally represented by the average frame rate of LVGL Music Demo statistics;
 
   3. **Display frame rate** refers to the frame rate of the animation effect actually displayed on the screen, indicating the fluency of the animation actually seen by the naked eye. It is determined by the interface frame rate and the rendering frame rate. The calculation formula is as follows:
 
-    $$
+    <div align=center >
     Display frame rate = min(interface frame rate, rendering frame rate)
-    $$
+    </div>
 
 * **Bounce Buffer mechanism**: The driver defaults to transfer data from PSRAM to the peripheral via DMA to refresh the screen, while the Bounce buffer first transfers the data from PSRAM to the internal SRAM via memcpy through the specified size of the internal SRAM, and then transfers the data to the peripheral via DMA. In this way, the upper limit of PCLK setting can be increased, and the screen drift problem caused by operating flash can also be avoided, but it will increase CPU usage and reduce the actual display frame rate. For detailed explanation, see [Doc](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)
 
