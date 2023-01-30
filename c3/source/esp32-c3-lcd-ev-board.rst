@@ -36,7 +36,7 @@ ESP32-C3-LCD-EV-BOARD 是一款基于 ESP32-C3 芯片的屏幕应用开发板，
 
 -  **嵌入式模组：** 板载 ESP32-C3-MINI-1 模组，内置 4 MB flash 以及 400 KB SRAM
 -  **屏幕：** 可搭配不同屏幕子板使用，支持 ``I2C`` 和 ``SPI`` 接口屏幕，请查看 `LCD 子板`_ 了解更多信息
--  **拨轮编码器开关：** 可进行 360° 的旋转以及开关按压，用于实现对屏幕 GUI 的控制操作
+-  **旋转编码器开关：** 可进行 360° 的旋转以及开关按压，用于实现对屏幕 GUI 的控制操作
 -  **USB：** 支持 USB Type-C 接口下载调试
 
 
@@ -92,7 +92,7 @@ ESP32-C3-LCD-EV-BOARD 开发板由主板和子板组成。
      - 通过 2.54 mm 间距的连接器可以连接 1.28 英寸 LCD 子板。
    * - LED
      - 具有 RGB 三色显示功能，可供用户配置用来做状态行为指示。
-   * - 拨轮编码器开关
+   * - 旋转编码器开关
      - 同时具有 360° 旋转编码器和按压开关的功能，用于实现对屏幕 GUI 的控制操作。
    * - 电源开关
      - 电源拨动开/关：向 ON 拨动开启开发板电源，向 OFF 拨动关闭开发板电源。
@@ -107,14 +107,14 @@ LCD 子板
 
 **ESP32-C3-LCD-EV-BOARD_DB** 子板支持 1.28 英寸、SPI 接口、分辨率为 240x240 的 LCD 屏，该屏使用的驱动芯片型号为 GC9A01。
 
-.. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-sub2-front.png
+.. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-sub-front.png
     :align: center
     :scale: 20%
     :alt: ESP32-C3-LCD-EV-BOARD_DB - 正面（点击放大）
 
     ESP32-C3-LCD-EV-BOARD_DB - 正面（点击放大）
 
-.. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-sub2-back.png
+.. figure:: ../_static/ESP32-C3-LCD-EV-BOARD/esp32-c3-lcd-ev-board-sub-back.png
     :align: center
     :scale: 20%
     :alt: ESP32-C3-LCD-EV-BOARD_DB - 反面（点击放大）
