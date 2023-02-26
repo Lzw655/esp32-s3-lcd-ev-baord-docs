@@ -16,9 +16,9 @@
 * **lcd_panel_st7789.h**:
 ```
 /*
- * SPDX-FileCopyrightText: 2021 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD
  *
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: CC0-1.0
  */
 
 #pragma once
@@ -48,9 +48,9 @@ esp_err_t lcd_new_panel_st7789(const esp_lcd_panel_io_handle_t io, const esp_lcd
 
 ```
 /*
- * SPDX-FileCopyrightText: 2021-2022 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD
  *
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: CC0-1.0
  */
 
 #include <stdlib.h>
@@ -368,7 +368,7 @@ static esp_err_t panel_st7789_disp_off(esp_lcd_panel_t *panel, bool off)
 
 ### 实现原理
 
-`esp_lcd` 内部提供了一套标准的 LCD 操作 API（包含了初始化、复位、刷屏等），位于 *esp_lcd_panel_interface.h* 头文件中，而用户适配驱动的方式就是要去实现这些接口，并利用 `esp_lcd_panel_handle_t` 变量将实现与接口进行关联。通过这样的方法，用户可以统一使用 *esp_lcd_panel_ops.h* 中的 API 对不同接口（SPI、RGB 等）的 LCD 进行操作，接口的对应关系如下：
+`esp_lcd` 内部提供了一套标准的 LCD 操作 API（包含了初始化、复位、刷屏等），位于 *[esp_lcd_panel_interface.h](https://github.com/espressif/esp-idf/blob/master/components/esp_lcd/interface/esp_lcd_panel_interface.h)* 文件中，而用户适配驱动的方式就是要去实现这些接口，并利用 `esp_lcd_panel_handle_t` 变量将实现与接口进行关联。通过这样的方法，用户可以统一使用 *[esp_lcd_panel_ops.h](https://github.com/espressif/esp-idf/blob/master/components/esp_lcd/include/esp_lcd_panel_ops.h)* 中的 API 对不同接口（SPI、RGB 等）的 LCD 进行操作，接口的对应关系如下：
 
 |     esp_lcd_panel_ops.h      | esp_lcd_panel_interface.h |
 | ---------------------------- | ------------------------- |
@@ -382,18 +382,18 @@ static esp_err_t panel_st7789_disp_off(esp_lcd_panel_t *panel, bool off)
 | esp_lcd_panel_invert_color() | invert_color()            |
 | esp_lcd_panel_disp_on_off()  | disp_on_off()             |
 
-当用户更换不同接口的屏幕后，仅需更换一套驱动，而无需修改应用层的代码。
+当用户更换不同接口的屏幕后，仅需更换一套驱动和修改初始化代码，而无需大量修改应用层的代码。
 
 ### 适配步骤
 
-1. **确认兼容性**：比较简单的方法是，查看屏幕驱动 IC 的数据手册确认刷屏过程（命令、时序等），通过对比模板中的 `panel_st7789_draw_bitmap()` 函数查看是否一致，否则请参照其他示例修改或自行进行适配
+1. **确认兼容性**：比较简单的方法是，查看自己屏幕驱动 IC 的数据手册确认刷屏过程（命令、时序等），通过对比模板中的 `panel_st7789_draw_bitmap()` 函数查看是否一致，否则请参照其他示例修改或自行进行适配
 2. **名称替换**：用编辑器在模板中搜索关键词 “st7789” 并全局替换为目标 IC 名称（如 st7701）
 3. **修改寄存器配置**：整个模板中仅需修改 `vendor_specific_init` 数组 和 `panel_st7789_init()` 函数。其中，前者需要根据屏幕厂商给的配置参数进行修改，并根据数据中的最大字节长度修改 `LCD_CONFIG_DATA_LEN_MAX` 宏；如果命令有延时或特殊命令等要求，可自行对后者进行调整。
 
 ## 使用示例
 
 ```
-    // 用户需要根据接口类型提前初始化 io_handle 变量
+    // 前置内容省略，用户需要根据接口类型提前初始化 io_handle 变量
 
     esp_lcd_panel_handle_t panel_handle = NULL;
     esp_lcd_panel_dev_config_t panel_config = {
@@ -414,4 +414,4 @@ static esp_err_t panel_st7789_disp_off(esp_lcd_panel_t *panel, bool off)
 
 * **可用的 API**：后续可以利用 `panel_handle` 和 *esp_lcd_panel_ops.h* 中的 API 来操作 LCD，如刷屏函数 `esp_lcd_panel_draw_bitmap()`
 
-* **`esp_lcd_panel_draw_bitmap()`**：8080/SPI LCD 刷屏是从指定内存地址传输数据到外设，通常采用的是 DMA 的方式，也就是说该函数调用完成后数据仍在通过 DMA 进行传输，此时不能修改正在使用的内存区域（如让 LVGL 渲染计算），因此需要通过总线初始化时注册的回调函数来判断传输是否完成
+* **刷屏说明**：8080/SPI LCD 刷屏是从指定内存地址传输数据到外设，通常采用的是 DMA 的方式，也就是说该函数调用完成后数据仍在通过 DMA 进行传输，此时不能修改正在使用的内存区域（如让 LVGL 渲染计算），因此需要通过总线初始化时注册的回调函数来判断传输是否完成
