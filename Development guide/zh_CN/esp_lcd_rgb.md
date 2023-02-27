@@ -38,7 +38,7 @@
 /******************* 请根据实际情况修改 *******************/
 
 #if BSP_IO_EXPANDER_EN
-#include "esp_io_expander_tca9554.h"`
+#include "esp_io_expander.h"`
 #else
 #include "driver/gpio.h"
 #endif
