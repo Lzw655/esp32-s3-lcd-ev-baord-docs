@@ -1,4 +1,4 @@
-# ESP_LCD 驱动适配
+# ESP_LCD 屏幕适配
 
 目前官方基于 `esp_lcd` 驱动适配过的 LCD 驱动 IC 如下：
 

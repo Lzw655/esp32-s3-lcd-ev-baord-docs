@@ -107,6 +107,6 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
 
     e. `sio_mode`：如果屏幕配置为如上图所示的 **Interface-I** 型，其数据的读取和写入只使用 SDA 一根数据线，此时 `sio_mode = 1`；如果屏幕配置为如上图所示的 **Interface-II** 型，其数据的读取使用 SDO，而写入使用 SDA，此时 `sio_mode = 0`（一般大部分屏幕都为 0）。
 
-# 配置 esp_lcd_panel
+# 屏幕初始化
 
-见 [ESP_LCD 驱动适配](./esp_lcd_panel_config.md)
+见 [ESP_LCD 屏幕适配](./esp_lcd_panel_config.md)。
