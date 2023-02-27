@@ -63,4 +63,4 @@ ESP 的 LCD 驱动位于 **ESP-IDF** 下的 [components/esp_lcd](https://github.
 * 具体问题描述见[链接](https://cloud.tencent.com/developer/article/1339560)
 * 解决方法：
     * RGB 接口：通过多 buffer 以及内部同步机制可以避免，例程参考 [display_lvgl_demos](https://github.com/espressif/esp-bsp/tree/master/examples/display_lvgl_demos)
-    *
+    * 其他接口：需要屏幕提供 TE 信号线，根据该信号进行同步

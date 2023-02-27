@@ -76,15 +76,13 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
                                             // 第 3 个参数为创建好的 panel_io 设备
 ```
 
-1. 目前 esp_lcd 不支持 SPI 3-line 模式（即 9 位模式，见 [LCD 硬件详解](./esp_lcd_hardware.md#3-line4-line-模式)），因此 `lcd_cmd_bits` 和 `lcd_param_bits` 必须为 8 的整数倍（8、16、24）。
-
-2. 基于 panel_io 可以使用以下两个 API 发送**命令**和**数据**：
+1. 基于 panel_io 可以使用以下两个 API 发送**命令**和**数据**：
 
     a. `esp_lcd_panel_io_tx_param()`：用于发送 LCD 配置相关的命令和参数，内部均调用 `spi_device_polling_transmit()` 实现数据传输，该函数只有数据传输完毕后才会返回
 
     b. `esp_lcd_panel_io_tx_color()`：用于发送 LCD 刷屏的命令和图像数据，通过 `spi_device_polling_transmit()` 发送命令，而通过 `spi_device_queue_trans()` 发送图像数据，该函数将图像缓存地址压入队列（深度由 `trans_queue_depth` 指定）成功后立刻返回。因此，**对于后续使用 LVGL 的程序**，必须在回调函数中调用 `lv_disp_flush_ready()`，并注册到上面配置代码的 `on_color_trans_done` 中。
 
-3. **根据数据手册 SPI 时序确定配置参数:**
+2. **根据数据手册的 SPI 时序确定配置参数:**
 
     下图是 ST7789 数据手册上部分 SPI 功能时序图，后续将以它为例介绍各个参数如何配置。
 

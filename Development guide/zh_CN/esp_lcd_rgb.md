@@ -410,17 +410,17 @@ esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
 
 ## 屏幕偏移问题
 
-* 原因： 该问题通常是因为 RGB 需要连续数据输出，当执行写 Flash 操作或其他应用程序禁用或抢占 PSRAM 带宽时，数据传输将无法跟上 RGB 的时钟速度，从而导致永久的屏幕漂移。
+* **原因**： 该问题通常是因为 RGB 需要连续数据输出，当执行写 Flash 操作或其他应用程序禁用或抢占 PSRAM 带宽时，数据传输将无法跟上 RGB 的时钟速度，从而导致永久的屏幕漂移。
 
-* 解决方法： 如果应用不需要使用 Wi-Fi、BLE 和连续写 Flash 的操作，请先尝试[文档](https://docs.espressif.com/projects/espressif-esp-faq/zh_CN/latest/software-framework/peripherals/lcd.html#rgb-lcd)中的方法优化工程的配置并**尽量降低 PCLK**，否则，请使用 "PSRAM XIP" + "RGB Bounce buffer" 的方法，开启步骤如下：
+* **解决方法**： 如果应用不存在使用 Wi-Fi、BLE 等存在连续写 Flash 的操作，请先尝试[文档](https://docs.espressif.com/projects/espressif-esp-faq/zh_CN/latest/software-framework/peripherals/lcd.html#rgb-lcd)中的方法优化工程的配置并**尽量降低 PCLK**，否则，请使用 "PSRAM XIP" + "RGB Bounce buffer" 的方法，开启步骤如下：
     1. 确认 IDF 版本为较新（> 2022.12.12）的 release/v5.0 或 master，因为旧版本不支持 "PSRAM XIP" 的功能
     2. 确认 PSRAM 配置里面是否能开启  `SPIRAM_FETCH_INSTRUCTIONS` 和 `SPIRAM_RODATA` 这两项（如果 rodata 段数据过大，会导致 PSRAM 内存不够）
     3. 确认内存（SRAM）是否有余量，大概需要占用 10 * screen_width * 4 字节
     4. 需要将 Data cache line size 设置为 64 Byte（可设置 Data cache line size 为 32KB 以节省内存）
-    5. 如以上均符合条件，那么就可以参考[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)修改 RGB 驱动（RGB 驱动里加上一行代码 .bounce_buffer_size_px = 10 * 屏幕宽度）
+    5. 如以上均符合条件，那么就可以参考[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)修改 RGB 配置代码（配置里加上一行代码 .bounce_buffer_size_px = 10 * 屏幕宽度）
     6. 如操作 Wifi 仍存在屏幕漂移问题，可以尝试关闭 PSRAM 里 `SPIRAM_TRY_ALLOCATE_WIFI_LWIP` 一项（会占用较大 SRAM）
 
-* 开启后带来的影响：
+* **开启后带来的影响**：
     1. CPU 使用率升高
     2. 可能会造成中断看门狗复位
     3. 会带来较大 SRAM 开销
