@@ -404,7 +404,7 @@ esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
 
 * **刷屏说明**：与 8080/SPI LCD 驱动不同，RGB LCD 刷屏是从指定内存地址搬运刷屏数据到 PSRAM 内的帧 buffer，是采用 memcpy 的方式进行内存搬运，也就是说该函数调用完成就表示数据搬运完成，此时可以对原始内存区域进行修改（如让 LVGL 渲染计算），无需通过回调函数等待
 
-* **防撕裂方案**：通过驱动内多 buffer 机制和 LVGL 的 buffering-mode，可以实现防撕裂方案，参考[例程](https://github.com/espressif/esp-dev-kits/tree/master/esp32-s3-lcd-ev-board/examples/lvgl_demos)
+* **防撕裂方案**：通过驱动内多 buffer 机制和 LVGL 的 buffering-mode，可以实现防撕裂方案，参考 [esp32-s3-lcd-ev-board](https://docs.espressif.com/projects/espressif-esp-dev-kits/zh_CN/latest/esp32s3/esp32-s3-lcd-ev-board/user_guide.html) 开发板的 [bsp](https://github.com/espressif/esp-bsp/tree/master/esp32_s3_lcd_ev_board) 及[示例](https://github.com/espressif/esp-bsp/tree/master/examples/display_lvgl_demos)
 
 * **可用的 API**：后续可以利用 `panel_handle` 和 *[esp_lcd_panel_ops.h](https://github.com/espressif/esp-idf/blob/master/components/esp_lcd/include/esp_lcd_panel_ops.h)* 中的 API 来操作 LCD，如刷屏函数 `esp_lcd_panel_draw_bitmap()`。除此之外，还可以调用 *[esp_lcd_panel_rgb.h](https://github.com/espressif/esp-idf/blob/master/components/esp_lcd/include/esp_lcd_panel_rgb.h)* 中 RGB 特有的 API，如设置 PCLK 函数 `esp_lcd_rgb_panel_set_pclk()`
 
