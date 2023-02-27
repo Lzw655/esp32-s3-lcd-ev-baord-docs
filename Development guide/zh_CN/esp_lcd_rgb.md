@@ -384,22 +384,6 @@ esp_lcd_panel_handle_t bsp_lcd_init(void *arg)
 }
 ```
 
-* **帧率**：分为接口帧率、渲染帧率和显示帧率
-
-  1. **接口帧率**是指 RGB 接口向 LCD 驱动 IC 刷屏传输数据的帧率，决定了屏幕显示帧率的上限，计算公式如下：
-
-    <div align=center >
-    接口帧率 = pclk_hz /(h_res + h_back_porch + h_front_porch + h_pulse_width) * (v_res + v_back_porch + v_front_porch + v_pulse_width)
-    </div>
-
-  2. **渲染帧率**是指需要 CPU 计算渲染出动画效果（或图片编解码）的帧率，如 LVGL 运行动画时统计的 FPS，一般利用 LVGL Music Demo 统计的平均帧率来表征；
-
-  3. **显示帧率**是指在屏幕上实际显示的动画效果的帧率，表示实际肉眼看到到的动画的流畅度，由接口帧率和渲染帧率共同决定，计算公式如下：
-
-    <div align=center >
-    显示帧率 = min(接口帧率, 渲染帧率)
-    </div>
-
 * **Bounce Buffer 机制**：驱动默认从 PSRAM 通过 DMA 传输数据到外设实现刷屏，而 Bounce buffer 通过指定大小的内部 SRAM，首先将数据从 PSRAM 通过 memcpy 搬运到内部 SRAM，然后通过 DMA 再传输至外设，以此来提升 PCLK 的设置上限，也能够避免操作 flash 引起的屏幕漂移问题，但是会提高 CPU 占用率，降低渲染帧率，详细讲解见[文档](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/peripherals/lcd.html#bounce-buffer-with-single-psram-frame-buffer)
 
 * **刷屏说明**：与 8080/SPI LCD 驱动不同，RGB LCD 刷屏是从指定内存地址搬运刷屏数据到 PSRAM 内的帧 buffer，是采用 memcpy 的方式进行内存搬运，也就是说该函数调用完成就表示数据搬运完成，此时可以对原始内存区域进行修改（如让 LVGL 渲染计算），无需通过回调函数等待

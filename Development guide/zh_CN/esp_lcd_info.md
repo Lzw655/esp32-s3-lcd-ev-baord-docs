@@ -55,6 +55,46 @@ ESP 的 LCD 驱动位于 **ESP-IDF** 下的 [components/esp_lcd](https://github.
 
 ## 常见问题
 
+### 如何提高帧率
+* **帧率**：分为接口帧率、渲染帧率和显示帧率
+
+  1. **接口帧率**是指外设接口向 LCD 驱动 IC 刷屏传输数据的帧率，决定了屏幕显示帧率的上限，计算公式如下：
+
+    <div align=center >
+    RGB 接口帧率 = (pclk_hz * 数据线宽度) / [色彩位数 * (h_res + h_back_porch + h_front_porch + h_pulse_width) * (v_res + v_back_porch + v_front_porch + v_pulse_width)]
+    </div>
+
+    <div align=center >
+    其他接口帧率 = (pclk_hz * 数据线宽度) / (色彩位数 * h_res * v_res)
+    </div>
+
+  2. **渲染帧率**是指需要 CPU 计算渲染出动画效果（或图片编解码）的帧率，如 LVGL 运行动画时统计的 FPS，目前一般利用 LVGL Music Demo 统计的平均帧率来表征；
+  3. **显示帧率**是指在屏幕上实际显示的动画效果的帧率，表示实际肉眼看到到的动画的流畅度，由接口帧率和渲染帧率共同决定，计算公式如下：
+
+    <div align=center >
+    显示帧率 = min(接口帧率, 渲染帧率)
+    </div>
+
+* 在 UI 动画效果复杂的情况下，显示帧率通常更加受限于渲染帧率，因此一般是通过加快渲染的计算和访存速度来提高帧率，可以尝试开启以下 menuconfig 配置项:
+    * System:
+        * ESP_DEFAULT_CPU_FREQ_MHZ_240
+        * FREERTOS_HZ = 1000
+        * COMPILER_OPTIMIZATION_PERF
+    * Flash:
+        * ESPTOOLPY_FLASHMODE_QIO
+        * ESPTOOLPY_FLASHFREQ_120M
+    * PSRAM（若有）:
+        * SPIRAM_MODE_OCT（仅 ESP32-S3R8 支持）
+        * SPIRAM_SPEED_120M (两者同时开启需要给 ESP-IDF 打[补丁](https://github.com/espressif/esp-dev-kits/tree/master/esp32-s3-lcd-ev-board/factory#idf-patch))
+        * SPIRAM_FETCH_INSTRUCTIONS
+        * SPIRAM_RODATA
+    * Cache:
+        * ESP32S3_DATA_CACHE_LINE_64B (对于 RGB，只有在使用 Bounce Buffer 或 PSRAM 8 线 120M 时才能启用， 否则将导致屏幕漂移)
+    * LVGL:
+        * LV_MEM_CUSTOM
+        * LV_MEMCPY_MEMSET_STD
+        * LV_ATTRIBUTE_FAST_MEM_USE_IRAM
+
 ### 上电花屏
 * 具体问题描述见[链接](https://www.cnblogs.com/linhaostudy/p/9579829.html)
 * 解决方法：背光延时开启
