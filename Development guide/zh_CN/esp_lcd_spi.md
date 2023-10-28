@@ -88,7 +88,7 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
 
     <div align=center ><img src="../_static/st7789_spi_timing.png" width=600/></div>
 
-    a. `spi_mode`: 取决于 SCK 时钟线的 CPOL（极性）和 CPHA（相位）。**CPOL** 可以简单理解为 CS 使能后 SCK 在第几个跳变沿采样，0 为第 1 个跳变沿，1 为第 2 个跳变沿；**CPHA** 可以简单理解为 SCK 空闲时电平，0 为低电平，1 为高电平。它们的对应关系如下表所示：
+    a. `spi_mode`: 取决于 SCK 时钟线的 CPOL（极性）和 CPHA（相位）。**CPHA** 可以简单理解为 CS 使能后 SCK 在第几个跳变沿采样，0 为第 1 个跳变沿，1 为第 2 个跳变沿；**CPOL** 可以简单理解为 SCK 空闲时电平，0 为低电平，1 为高电平。它们的对应关系如下表所示：
 
     | spi_mode | CPOL | CPHA |
     | :------: | :--: | :--: |
@@ -97,7 +97,7 @@ ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io
     | 2        | 1    | 0    |
     | 3        | 1    | 1    |
 
-    从上图中可以看出，SCL 在 CS 使能后第 1 个跳变沿采样，所以 CPOL = 0， SCL 空闲时电平为 0，所以 CPHA 为 0，因此可以得到 `spi_mode = 0`（一般大部分屏幕都为 0）。
+    从上图中可以看出，SCL 在 CS 使能后第 1 个跳变沿采样，所以 CPHA = 0， SCL 空闲时电平为 0，所以 CPOL 为 0，因此可以得到 `spi_mode = 0`（一般大部分屏幕都为 0）。
 
     b. `cs_high_active`：从上图可以看出 CS 拉低时开始操作，因此 `cs_high_active = 0`（一般大部分屏幕都为 0）。
 
